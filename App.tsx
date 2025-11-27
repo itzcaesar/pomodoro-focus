@@ -1,23 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { Settings as SettingsIcon, Moon, Sun } from 'lucide-react';
 import { useTimer } from './hooks/useTimer';
 import { Settings, TimerMode, PixabayImage } from './types';
 import { DEFAULT_SETTINGS, MODE_COLORS, MODE_GRADIENTS } from './constants';
 import { ProgressRing } from './components/ProgressRing';
 import { Controls } from './components/Controls';
-import { SettingsModal } from './components/SettingsModal';
 import { ModeSelector } from './components/ModeSelector';
-import { MusicPlayer } from './components/MusicPlayer';
-import { FaqModal } from './components/FaqModal';
-import { FaqInline } from './components/FaqInline';
-import { MotivationalCharacter } from './components/MotivationalCharacter';
-import { AboutModal } from './components/AboutModal';
-import { Confetti } from './components/Confetti';
-import { KeyboardShortcutsHelp } from './components/KeyboardShortcutsHelp';
-import { StatisticsModal } from './components/StatisticsModal';
 import { fetchAestheticBackground, getPhotographerUrl, getPixabayUrl } from './utils/pixabay';
 import { requestNotificationPermission } from './utils/notifications';
 import { updateFavicon } from './utils/favicon';
+
+// Lazy load heavy components
+const SettingsModal = lazy(() => import('./components/SettingsModal').then(m => ({ default: m.SettingsModal })));
+const MusicPlayer = lazy(() => import('./components/MusicPlayer').then(m => ({ default: m.MusicPlayer })));
+const FaqModal = lazy(() => import('./components/FaqModal').then(m => ({ default: m.FaqModal })));
+const FaqInline = lazy(() => import('./components/FaqInline').then(m => ({ default: m.FaqInline })));
+const MotivationalCharacter = lazy(() => import('./components/MotivationalCharacter').then(m => ({ default: m.MotivationalCharacter })));
+const AboutModal = lazy(() => import('./components/AboutModal').then(m => ({ default: m.AboutModal })));
+const Confetti = lazy(() => import('./components/Confetti').then(m => ({ default: m.Confetti })));
+const KeyboardShortcutsHelp = lazy(() => import('./components/KeyboardShortcutsHelp').then(m => ({ default: m.KeyboardShortcutsHelp })));
+const StatisticsModal = lazy(() => import('./components/StatisticsModal').then(m => ({ default: m.StatisticsModal })));
 
 function App() {
   const [settings, setSettings] = useState<Settings>(() => {
@@ -349,13 +351,15 @@ function App() {
 
           {/* Music Player - Mobile Only */}
           <div className={`w-full lg:hidden transition-all duration-300 ${isMusicPlayerExpanded ? 'mt-6' : 'mt-8'}`}>
-            <MusicPlayer 
-              mode={mode} 
-              platform={settings.musicPlatform}
-              spotifyUrl={settings.spotifyPlaylistUrl}
-              youtubeUrl={settings.youtubePlaylistUrl}
-              onExpandChange={setIsMusicPlayerExpanded}
-            />
+            <Suspense fallback={<div className="glass-panel rounded-2xl p-4 h-32 animate-pulse" />}>
+              <MusicPlayer 
+                mode={mode} 
+                platform={settings.musicPlatform}
+                spotifyUrl={settings.spotifyPlaylistUrl}
+                youtubeUrl={settings.youtubePlaylistUrl}
+                onExpandChange={setIsMusicPlayerExpanded}
+              />
+            </Suspense>
           </div>
 
         </div>
@@ -363,56 +367,74 @@ function App() {
         {/* Music Player - Desktop Only */}
         <div className="hidden lg:block w-full space-y-6 animate-slide-up" style={{ animationDelay: '0.1s' }}>
           <div className={`glass-panel rounded-[2.5rem] p-8 lg:p-10 sticky top-6 transition-all duration-300`}>
-            <MusicPlayer 
-              mode={mode} 
-              platform={settings.musicPlatform}
-              spotifyUrl={settings.spotifyPlaylistUrl}
-              youtubeUrl={settings.youtubePlaylistUrl}
-              onExpandChange={setIsMusicPlayerExpanded}
-            />
+            <Suspense fallback={<div className="h-32 animate-pulse" />}>
+              <MusicPlayer 
+                mode={mode} 
+                platform={settings.musicPlatform}
+                spotifyUrl={settings.spotifyPlaylistUrl}
+                youtubeUrl={settings.youtubePlaylistUrl}
+                onExpandChange={setIsMusicPlayerExpanded}
+              />
+            </Suspense>
           </div>
           
           {/* FAQ Section - Desktop Only */}
           <div className="glass-panel rounded-[2.5rem] p-8 lg:p-10">
-            <FaqInline mode={mode} />
+            <Suspense fallback={<div className="h-64 animate-pulse" />}>
+              <FaqInline mode={mode} />
+            </Suspense>
           </div>
         </div>
 
       </div>
 
-      <SettingsModal 
-        isOpen={isSettingsOpen}
-        onClose={() => setIsSettingsOpen(false)}
-        settings={settings}
-        onUpdateSettings={setSettings}
-      />
+      <Suspense fallback={null}>
+        <SettingsModal 
+          isOpen={isSettingsOpen}
+          onClose={() => setIsSettingsOpen(false)}
+          settings={settings}
+          onUpdateSettings={setSettings}
+        />
+      </Suspense>
 
-      <FaqModal 
-        isOpen={isFaqOpen}
-        onClose={() => setIsFaqOpen(false)}
-      />
+      <Suspense fallback={null}>
+        <FaqModal 
+          isOpen={isFaqOpen}
+          onClose={() => setIsFaqOpen(false)}
+        />
+      </Suspense>
 
-      <AboutModal 
-        isOpen={isAboutOpen}
-        onClose={() => setIsAboutOpen(false)}
-        mode={mode}
-      />
+      <Suspense fallback={null}>
+        <AboutModal 
+          isOpen={isAboutOpen}
+          onClose={() => setIsAboutOpen(false)}
+          mode={mode}
+        />
+      </Suspense>
 
-      <StatisticsModal 
-        isOpen={isStatsOpen}
-        onClose={() => setIsStatsOpen(false)}
-        mode={mode}
-      />
+      <Suspense fallback={null}>
+        <StatisticsModal 
+          isOpen={isStatsOpen}
+          onClose={() => setIsStatsOpen(false)}
+          mode={mode}
+        />
+      </Suspense>
 
-      <Confetti trigger={showConfetti} />
+      <Suspense fallback={null}>
+        <Confetti trigger={showConfetti} />
+      </Suspense>
 
-      <KeyboardShortcutsHelp 
-        isOpen={isKeyboardShortcutsOpen}
-        onClose={() => setIsKeyboardShortcutsOpen(false)}
-        mode={mode}
-      />
+      <Suspense fallback={null}>
+        <KeyboardShortcutsHelp 
+          isOpen={isKeyboardShortcutsOpen}
+          onClose={() => setIsKeyboardShortcutsOpen(false)}
+          mode={mode}
+        />
+      </Suspense>
 
-      {showCharacter && <MotivationalCharacter mode={mode} isTimerActive={isActive} messageInterval={settings.characterMessageInterval} />}
+      <Suspense fallback={null}>
+        {showCharacter && <MotivationalCharacter mode={mode} isTimerActive={isActive} messageInterval={settings.characterMessageInterval} />}
+      </Suspense>
     </div>
   );
 }

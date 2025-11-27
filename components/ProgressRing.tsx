@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { TimerMode } from '../types';
 import { MODE_COLORS } from '../constants';
 
@@ -9,7 +9,7 @@ interface ProgressRingProps {
   mode: TimerMode;
 }
 
-export const ProgressRing: React.FC<ProgressRingProps> = ({ radius, stroke, progress, mode }) => {
+export const ProgressRing: React.FC<ProgressRingProps> = memo(({ radius, stroke, progress, mode }) => {
   const normalizedRadius = radius - stroke * 2;
   const circumference = normalizedRadius * 2 * Math.PI;
   const strokeDashoffset = circumference - (progress / 100) * circumference;
@@ -84,4 +84,6 @@ export const ProgressRing: React.FC<ProgressRingProps> = ({ radius, stroke, prog
       </svg>
     </div>
   );
-};
+});
+
+ProgressRing.displayName = 'ProgressRing';

@@ -75,74 +75,80 @@ export const Controls: React.FC<ControlsProps> = ({
         </button>
       </div>
 
-      {/* Secondary Controls Row */}
-      <div className="flex items-center justify-center gap-3">
-        {/* FAQ Button - Mobile Only */}
-        <button
-          onClick={onOpenFaq}
-          className={`lg:hidden p-2.5 rounded-full glass-button text-gray-600 dark:text-gray-300 ${MODE_COLORS[mode].hover} transition-all duration-300 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${MODE_COLORS[mode].ring}`}
-          aria-label="FAQ"
-        >
-          <HelpCircle size={16} />
-        </button>
+      {/* Secondary Controls - Two Rows on Mobile, One Row on Desktop */}
+      <div className="flex flex-col md:flex-row items-center justify-center gap-3">
+        {/* First Row / Group */}
+        <div className="flex items-center justify-center gap-3">
+          {/* FAQ Button - Mobile Only */}
+          <button
+            onClick={onOpenFaq}
+            className={`lg:hidden p-2.5 rounded-full glass-button text-gray-600 dark:text-gray-300 ${MODE_COLORS[mode].hover} transition-all duration-300 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${MODE_COLORS[mode].ring}`}
+            aria-label="FAQ"
+          >
+            <HelpCircle size={16} />
+          </button>
 
-        {/* Character Toggle */}
-        <button
-          onClick={onToggleCharacter}
-          className={`p-2.5 rounded-full glass-button transition-all duration-300 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
-            showCharacter 
-              ? MODE_COLORS[mode].text
-              : `text-gray-600 dark:text-gray-300 ${MODE_COLORS[mode].hover}`
-          } ${MODE_COLORS[mode].ring}`}
-          aria-label="Toggle Character"
-        >
-          <Smile size={16} />
-        </button>
+          {/* Character Toggle */}
+          <button
+            onClick={onToggleCharacter}
+            className={`p-2.5 rounded-full glass-button transition-all duration-300 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
+              showCharacter 
+                ? MODE_COLORS[mode].text
+                : `text-gray-600 dark:text-gray-300 ${MODE_COLORS[mode].hover}`
+            } ${MODE_COLORS[mode].ring}`}
+            aria-label="Toggle Character"
+          >
+            <Smile size={16} />
+          </button>
 
-        {/* Theme Toggle */}
-        <button
-          onClick={onToggleTheme}
-          className={`p-2.5 rounded-full glass-button text-gray-600 dark:text-gray-300 ${MODE_COLORS[mode].hover} transition-all duration-300 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${MODE_COLORS[mode].ring}`}
-          aria-label="Toggle Theme"
-        >
-          {isDarkMode ? <Sun size={16} /> : <Moon size={16} />}
-        </button>
+          {/* Theme Toggle */}
+          <button
+            onClick={onToggleTheme}
+            className={`p-2.5 rounded-full glass-button text-gray-600 dark:text-gray-300 ${MODE_COLORS[mode].hover} transition-all duration-300 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${MODE_COLORS[mode].ring}`}
+            aria-label="Toggle Theme"
+          >
+            {isDarkMode ? <Sun size={16} /> : <Moon size={16} />}
+          </button>
 
-        {/* About */}
-        <button
-          onClick={onOpenAbout}
-          className={`p-2.5 rounded-full glass-button text-gray-600 dark:text-gray-300 ${MODE_COLORS[mode].hover} transition-all duration-300 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${MODE_COLORS[mode].ring}`}
-          aria-label="About Developer"
-        >
-          <Info size={16} />
-        </button>
+          {/* About */}
+          <button
+            onClick={onOpenAbout}
+            className={`p-2.5 rounded-full glass-button text-gray-600 dark:text-gray-300 ${MODE_COLORS[mode].hover} transition-all duration-300 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${MODE_COLORS[mode].ring}`}
+            aria-label="About Developer"
+          >
+            <Info size={16} />
+          </button>
+        </div>
 
-        {/* Statistics */}
-        <button
-          onClick={onOpenStats}
-          className={`p-2.5 rounded-full glass-button text-gray-600 dark:text-gray-300 ${MODE_COLORS[mode].hover} transition-all duration-300 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${MODE_COLORS[mode].ring}`}
-          aria-label="View Statistics"
-        >
-          <TrendingUp size={16} />
-        </button>
+        {/* Second Row / Group */}
+        <div className="flex items-center justify-center gap-3">
+          {/* Statistics */}
+          <button
+            onClick={onOpenStats}
+            className={`p-2.5 rounded-full glass-button text-gray-600 dark:text-gray-300 ${MODE_COLORS[mode].hover} transition-all duration-300 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${MODE_COLORS[mode].ring}`}
+            aria-label="View Statistics"
+          >
+            <TrendingUp size={16} />
+          </button>
 
-        {/* Keyboard Shortcuts */}
-        <button
-          onClick={onOpenKeyboardShortcuts}
-          className={`p-2.5 rounded-full glass-button text-gray-600 dark:text-gray-300 ${MODE_COLORS[mode].hover} transition-all duration-300 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${MODE_COLORS[mode].ring}`}
-          aria-label="Keyboard Shortcuts"
-        >
-          <Keyboard size={16} />
-        </button>
+          {/* Keyboard Shortcuts */}
+          <button
+            onClick={onOpenKeyboardShortcuts}
+            className={`p-2.5 rounded-full glass-button text-gray-600 dark:text-gray-300 ${MODE_COLORS[mode].hover} transition-all duration-300 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${MODE_COLORS[mode].ring}`}
+            aria-label="Keyboard Shortcuts"
+          >
+            <Keyboard size={16} />
+          </button>
 
-        {/* Settings */}
-        <button
-          onClick={onOpenSettings}
-          className={`p-2.5 rounded-full glass-button text-gray-600 dark:text-gray-300 ${MODE_COLORS[mode].hover} transition-all duration-300 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${MODE_COLORS[mode].ring}`}
-          aria-label="Settings"
-        >
-          <Settings size={16} />
-        </button>
+          {/* Settings */}
+          <button
+            onClick={onOpenSettings}
+            className={`p-2.5 rounded-full glass-button text-gray-600 dark:text-gray-300 ${MODE_COLORS[mode].hover} transition-all duration-300 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${MODE_COLORS[mode].ring}`}
+            aria-label="Settings"
+          >
+            <Settings size={16} />
+          </button>
+        </div>
       </div>
     </div>
   );
