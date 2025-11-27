@@ -12,6 +12,7 @@ export interface Settings {
   autoStartBreaks: boolean;
   autoStartPomodoros: boolean;
   characterMessageInterval: number;
+  enableBackgrounds: boolean;
 }
 
 export interface TimerState {
@@ -19,6 +20,29 @@ export interface TimerState {
   timeLeft: number;
   isActive: boolean;
   cycleCount: number;
+}
+
+export interface PixabayImage {
+  id: number;
+  largeImageURL: string;
+  webformatURL: string;
+  imageWidth: number;
+  imageHeight: number;
+  user: string;
+  userImageURL: string;
+  pageURL: string;
+}
+
+export interface PexelsImage {
+  id: number;
+  src: {
+    original: string;
+    large: string;
+    large2x: string;
+  };
+  photographer: string;
+  photographer_url: string;
+  url: string;
 }
 
 declare global {

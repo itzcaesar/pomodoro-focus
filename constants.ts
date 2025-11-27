@@ -8,6 +8,7 @@ export const DEFAULT_SETTINGS: Settings = {
   autoStartBreaks: false,
   autoStartPomodoros: false,
   characterMessageInterval: 15,
+  enableBackgrounds: true,
 };
 
 // Text colors for minimal accents

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Settings as SettingsIcon, Moon, Sun } from 'lucide-react';
 import { useTimer } from './hooks/useTimer';
-import { Settings, TimerMode } from './types';
+import { Settings, TimerMode, PixabayImage } from './types';
 import { DEFAULT_SETTINGS, MODE_COLORS, MODE_GRADIENTS } from './constants';
 import { ProgressRing } from './components/ProgressRing';
 import { Controls } from './components/Controls';
@@ -11,6 +11,7 @@ import { LofiPlayer } from './components/LofiPlayer';
 import { FaqModal } from './components/FaqModal';
 import { FaqInline } from './components/FaqInline';
 import { MotivationalCharacter } from './components/MotivationalCharacter';
+import { fetchAestheticBackground, getPhotographerUrl, getPixabayUrl } from './utils/pixabay';
 
 function App() {
   const [settings, setSettings] = useState<Settings>(() => {
@@ -29,6 +30,9 @@ function App() {
     const saved = localStorage.getItem('pomodoro-show-character');
     return saved ? saved === 'true' : true;
   });
+  const [backgroundImage, setBackgroundImage] = useState<PixabayImage | null>(null);
+  const [showBackgroundCredit, setShowBackgroundCredit] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   const {
     mode,
@@ -60,6 +64,47 @@ function App() {
     localStorage.setItem('pomodoro-show-character', showCharacter.toString());
   }, [showCharacter]);
 
+  // Detect mobile/desktop for background orientation
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Fetch background image
+  useEffect(() => {
+    const loadBackground = async () => {
+      console.log('loadBackground called', { enableBackgrounds: settings.enableBackgrounds, isMobile });
+      
+      if (!settings.enableBackgrounds) {
+        setBackgroundImage(null);
+        return;
+      }
+
+      const image = await fetchAestheticBackground(isMobile);
+      console.log('Fetched image:', image);
+      
+      if (image) {
+        setBackgroundImage(image);
+        setShowBackgroundCredit(true);
+        // Hide credit after 5 seconds
+        setTimeout(() => setShowBackgroundCredit(false), 5000);
+      }
+    };
+
+    loadBackground();
+    
+    // Refresh background every hour
+    if (settings.enableBackgrounds) {
+      const interval = setInterval(loadBackground, 60 * 60 * 1000);
+      return () => clearInterval(interval);
+    }
+  }, [settings.enableBackgrounds, isMobile]);
+
   useEffect(() => {
     const minutes = Math.floor(timeLeft / 60);
     const seconds = timeLeft % 60;
@@ -83,7 +128,39 @@ function App() {
   const cycleProgress = (cycleCount - 1) % settings.longBreakInterval + 1;
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-3 sm:p-6 font-sans">
+    <div 
+      className="min-h-screen flex items-center justify-center p-3 sm:p-6 font-sans relative overflow-hidden transition-all duration-700"
+      style={backgroundImage && settings.enableBackgrounds ? {
+        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url(${backgroundImage.largeImageURL})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed',
+        backgroundRepeat: 'no-repeat'
+      } : undefined}
+    >
+      {/* Background Image Credit */}
+      {backgroundImage && settings.enableBackgrounds && showBackgroundCredit && (
+        <div className="fixed bottom-4 left-4 z-40 bg-black/60 backdrop-blur-sm text-white text-xs px-3 py-2 rounded-lg transition-opacity duration-500 animate-fade-in">
+          Photo by{' '}
+          <a
+            href={getPhotographerUrl(backgroundImage.pageURL)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:text-rose-300 transition-colors"
+          >
+            {backgroundImage.user}
+          </a>
+          {' '}on{' '}
+          <a
+            href={getPixabayUrl()}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:text-rose-300 transition-colors"
+          >
+            Pixabay
+          </a>
+        </div>
+      )}
       
       {/* Main Container - Responsive Grid Layout */}
       <div className="w-full max-w-7xl lg:grid lg:grid-cols-2 lg:gap-6 lg:items-start">
