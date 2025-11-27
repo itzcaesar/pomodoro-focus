@@ -1,0 +1,163 @@
+import React, { useState, useEffect } from 'react';
+import { Settings as SettingsIcon, Moon, Sun } from 'lucide-react';
+import { useTimer } from './hooks/useTimer';
+import { Settings, TimerMode } from './types';
+import { DEFAULT_SETTINGS, MODE_COLORS, MODE_GRADIENTS } from './constants';
+import { ProgressRing } from './components/ProgressRing';
+import { Controls } from './components/Controls';
+import { SettingsModal } from './components/SettingsModal';
+import { ModeSelector } from './components/ModeSelector';
+
+function App() {
+  const [settings, setSettings] = useState<Settings>(() => {
+    const saved = localStorage.getItem('pomodoro-settings');
+    return saved ? JSON.parse(saved) : DEFAULT_SETTINGS;
+  });
+
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    const saved = localStorage.getItem('pomodoro-theme');
+    return saved ? saved === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+  });
+
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
+  const {
+    mode,
+    setMode,
+    timeLeft,
+    isActive,
+    isCompleted,
+    cycleCount,
+    toggleTimer,
+    resetTimer,
+    totalTime
+  } = useTimer(settings);
+
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('pomodoro-theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('pomodoro-theme', 'light');
+    }
+  }, [isDarkMode]);
+
+  useEffect(() => {
+    localStorage.setItem('pomodoro-settings', JSON.stringify(settings));
+  }, [settings]);
+
+  useEffect(() => {
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    const timeString = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    const status = isCompleted ? 'Completed!' : (mode === TimerMode.Focus ? 'Focus' : 'Break');
+    document.title = `${timeString} - ${status}`;
+  }, [timeLeft, mode, isCompleted]);
+
+  const formatTime = (seconds: number) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m}:${s.toString().padStart(2, '0')}`;
+  };
+
+  const calculateProgress = () => {
+    if (isCompleted) return 100;
+    return ((totalTime - timeLeft) / totalTime) * 100;
+  };
+
+  // Correct cycle calculation: 1-based index for display, modulo for progress bar
+  const cycleProgress = (cycleCount - 1) % settings.longBreakInterval + 1;
+
+  return (
+    <div className="min-h-screen flex items-center justify-center p-4 sm:p-6 font-sans">
+      
+      {/* Header Actions - Positioned outside the card */}
+      <div className="fixed top-6 right-6 flex items-center gap-3 z-50">
+        <button
+          onClick={() => setIsDarkMode(!isDarkMode)}
+          className="glass-button p-2.5 rounded-full text-gray-600 dark:text-gray-300 hover:text-rose-500 dark:hover:text-rose-400 transition-colors active:scale-95 shadow-lg"
+          aria-label="Toggle Theme"
+        >
+          {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
+        </button>
+        <button
+          onClick={() => setIsSettingsOpen(true)}
+          className="glass-button p-2.5 rounded-full text-gray-600 dark:text-gray-300 hover:text-rose-500 dark:hover:text-rose-400 transition-colors active:scale-95 shadow-lg"
+          aria-label="Settings"
+        >
+          <SettingsIcon size={18} />
+        </button>
+      </div>
+      
+      {/* Main Glass Card */}
+      <div className="relative w-full max-w-lg glass-panel rounded-[2.5rem] p-8 sm:p-12 z-10 animate-slide-up flex flex-col items-center">
+
+        {/* Mode Selector */}
+        <div className="mb-12 w-full">
+            <ModeSelector currentMode={mode} onSelectMode={(m) => {
+                setMode(m);
+                resetTimer();
+            }} />
+        </div>
+
+        {/* Timer Display */}
+        <div className={`relative transition-all duration-700 ease-out transform ${isCompleted ? 'scale-110' : ''}`}>
+          <div className="relative flex flex-col items-center justify-center">
+             <ProgressRing 
+               radius={140} 
+               stroke={8} 
+               progress={calculateProgress()} 
+               mode={mode}
+             />
+             
+             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none select-none">
+                <span className={`text-7xl sm:text-8xl font-bold tracking-tighter tabular-nums transition-colors duration-500 ${MODE_COLORS[mode]} drop-shadow-md`}>
+                  {formatTime(timeLeft)}
+                </span>
+                <span className={`mt-2 text-sm font-bold uppercase tracking-[0.25em] transition-all duration-500 ${isCompleted ? 'text-emerald-500 scale-110' : 'text-gray-400 dark:text-gray-500'}`}>
+                  {isCompleted ? 'Session Done' : (isActive ? 'Active' : 'Paused')}
+                </span>
+             </div>
+          </div>
+        </div>
+
+        {/* Controls */}
+        <Controls 
+          isActive={isActive} 
+          onToggle={toggleTimer} 
+          onReset={resetTimer} 
+          mode={mode}
+        />
+
+        {/* Footer Info / Cycle Progress */}
+        <div className="mt-12 w-full">
+            <div className="flex justify-between items-end mb-3 px-1">
+                <span className="text-xs uppercase tracking-wider text-gray-400 dark:text-gray-500 font-bold">Cycle Progress</span>
+                <span className="text-sm font-bold text-gray-700 dark:text-gray-300">
+                    {cycleProgress} <span className="text-gray-400">/</span> {settings.longBreakInterval}
+                </span>
+            </div>
+            
+            {/* Liquid Progress Bar */}
+            <div className="w-full h-2 bg-gray-200/50 dark:bg-gray-700/50 rounded-full overflow-hidden backdrop-blur-sm">
+                <div 
+                    className={`h-full ${MODE_GRADIENTS[mode]} transition-all duration-700 ease-out shadow-[0_0_10px_rgba(0,0,0,0.1)]`} 
+                    style={{ width: `${(cycleProgress / settings.longBreakInterval) * 100}%` }}
+                ></div>
+            </div>
+        </div>
+
+      </div>
+
+      <SettingsModal 
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+        settings={settings}
+        onUpdateSettings={setSettings}
+      />
+    </div>
+  );
+}
+
+export default App;
