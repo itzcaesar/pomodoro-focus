@@ -1,6 +1,6 @@
 // Spotify Configuration
 export const SPOTIFY_CONFIG = {
-  CLIENT_ID: '12973757b559477fae28f4ab1127ebea',
+  CLIENT_ID: process.env.SPOTIFY_API_KEY,
   REDIRECT_URI: window.location.origin,
   SCOPES: [
     'streaming',
