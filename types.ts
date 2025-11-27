@@ -11,6 +11,7 @@ export interface Settings {
   longBreakInterval: number;
   autoStartBreaks: boolean;
   autoStartPomodoros: boolean;
+  characterMessageInterval: number;
 }
 
 export interface TimerState {

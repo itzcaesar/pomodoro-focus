@@ -7,6 +7,10 @@ import { ProgressRing } from './components/ProgressRing';
 import { Controls } from './components/Controls';
 import { SettingsModal } from './components/SettingsModal';
 import { ModeSelector } from './components/ModeSelector';
+import { LofiPlayer } from './components/LofiPlayer';
+import { FaqModal } from './components/FaqModal';
+import { FaqInline } from './components/FaqInline';
+import { MotivationalCharacter } from './components/MotivationalCharacter';
 
 function App() {
   const [settings, setSettings] = useState<Settings>(() => {
@@ -20,6 +24,11 @@ function App() {
   });
 
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isFaqOpen, setIsFaqOpen] = useState(false);
+  const [showCharacter, setShowCharacter] = useState(() => {
+    const saved = localStorage.getItem('pomodoro-show-character');
+    return saved ? saved === 'true' : true;
+  });
 
   const {
     mode,
@@ -48,6 +57,10 @@ function App() {
   }, [settings]);
 
   useEffect(() => {
+    localStorage.setItem('pomodoro-show-character', showCharacter.toString());
+  }, [showCharacter]);
+
+  useEffect(() => {
     const minutes = Math.floor(timeLeft / 60);
     const seconds = timeLeft % 60;
     const timeString = `${minutes}:${seconds.toString().padStart(2, '0')}`;
@@ -70,82 +83,92 @@ function App() {
   const cycleProgress = (cycleCount - 1) % settings.longBreakInterval + 1;
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 sm:p-6 font-sans">
+    <div className="min-h-screen flex items-center justify-center p-3 sm:p-6 font-sans">
       
-      {/* Header Actions - Positioned outside the card */}
-      <div className="fixed top-6 right-6 flex items-center gap-3 z-50">
-        <button
-          onClick={() => setIsDarkMode(!isDarkMode)}
-          className="glass-button p-2.5 rounded-full text-gray-600 dark:text-gray-300 hover:text-rose-500 dark:hover:text-rose-400 transition-colors active:scale-95 shadow-lg"
-          aria-label="Toggle Theme"
-        >
-          {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
-        </button>
-        <button
-          onClick={() => setIsSettingsOpen(true)}
-          className="glass-button p-2.5 rounded-full text-gray-600 dark:text-gray-300 hover:text-rose-500 dark:hover:text-rose-400 transition-colors active:scale-95 shadow-lg"
-          aria-label="Settings"
-        >
-          <SettingsIcon size={18} />
-        </button>
-      </div>
-      
-      {/* Main Glass Card */}
-      <div className="relative w-full max-w-lg glass-panel rounded-[2.5rem] p-8 sm:p-12 z-10 animate-slide-up flex flex-col items-center">
+      {/* Main Container - Responsive Grid Layout */}
+      <div className="w-full max-w-7xl lg:grid lg:grid-cols-2 lg:gap-6 lg:items-start">
+        
+        {/* Timer Card */}
+        <div className="relative w-full glass-panel rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 lg:p-12 z-10 animate-slide-up flex flex-col items-center lg:sticky lg:top-6">
 
-        {/* Mode Selector */}
-        <div className="mb-12 w-full">
-            <ModeSelector currentMode={mode} onSelectMode={(m) => {
-                setMode(m);
-                resetTimer();
-            }} />
-        </div>
-
-        {/* Timer Display */}
-        <div className={`relative transition-all duration-700 ease-out transform ${isCompleted ? 'scale-110' : ''}`}>
-          <div className="relative flex flex-col items-center justify-center">
-             <ProgressRing 
-               radius={140} 
-               stroke={8} 
-               progress={calculateProgress()} 
-               mode={mode}
-             />
-             
-             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none select-none">
-                <span className={`text-7xl sm:text-8xl font-bold tracking-tighter tabular-nums transition-colors duration-500 ${MODE_COLORS[mode]} drop-shadow-md`}>
-                  {formatTime(timeLeft)}
-                </span>
-                <span className={`mt-2 text-sm font-bold uppercase tracking-[0.25em] transition-all duration-500 ${isCompleted ? 'text-emerald-500 scale-110' : 'text-gray-400 dark:text-gray-500'}`}>
-                  {isCompleted ? 'Session Done' : (isActive ? 'Active' : 'Paused')}
-                </span>
-             </div>
+          {/* Mode Selector */}
+          <div className="mb-8 sm:mb-12 w-full">
+              <ModeSelector currentMode={mode} onSelectMode={(m) => {
+                  setMode(m);
+                  resetTimer();
+              }} />
           </div>
+
+          {/* Timer Display */}
+          <div className={`relative transition-all duration-700 ease-out transform ${isCompleted ? 'scale-110' : ''}`}>
+            <div className="relative flex flex-col items-center justify-center">
+               <ProgressRing 
+                 radius={140} 
+                 stroke={8} 
+                 progress={calculateProgress()} 
+                 mode={mode}
+               />
+               
+               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none select-none">
+                  <span className={`text-5xl sm:text-6xl font-bold tracking-tighter tabular-nums transition-colors duration-500 ${MODE_COLORS[mode]} drop-shadow-md`}>
+                    {formatTime(timeLeft)}
+                  </span>
+                  <span className={`mt-2 text-sm font-bold uppercase tracking-[0.25em] transition-all duration-500 ${isCompleted ? 'text-emerald-500 scale-110' : 'text-gray-400 dark:text-gray-500'}`}>
+                    {isCompleted ? 'Session Done' : (isActive ? 'Active' : 'Paused')}
+                  </span>
+               </div>
+            </div>
+          </div>
+
+          {/* Controls */}
+          <Controls 
+            isActive={isActive} 
+            onToggle={toggleTimer} 
+            onReset={resetTimer} 
+            mode={mode}
+            isDarkMode={isDarkMode}
+            onToggleTheme={() => setIsDarkMode(!isDarkMode)}
+            onOpenSettings={() => setIsSettingsOpen(true)}
+            onOpenFaq={() => setIsFaqOpen(true)}
+            showCharacter={showCharacter}
+            onToggleCharacter={() => setShowCharacter(!showCharacter)}
+          />
+
+          {/* Footer Info / Cycle Progress */}
+          <div className="mt-12 w-full">
+              <div className="flex justify-between items-end mb-3 px-1">
+                  <span className="text-xs uppercase tracking-wider text-gray-400 dark:text-gray-500 font-bold">Cycle Progress</span>
+                  <span className="text-sm font-bold text-gray-700 dark:text-gray-300">
+                      {cycleProgress} <span className="text-gray-400">/</span> {settings.longBreakInterval}
+                  </span>
+              </div>
+              
+              {/* Liquid Progress Bar */}
+              <div className="w-full h-2 bg-gray-200/50 dark:bg-gray-700/50 rounded-full overflow-hidden backdrop-blur-sm">
+                  <div 
+                      className={`h-full ${MODE_GRADIENTS[mode]} transition-all duration-700 ease-out shadow-[0_0_10px_rgba(0,0,0,0.1)]`} 
+                      style={{ width: `${(cycleProgress / settings.longBreakInterval) * 100}%` }}
+                  ></div>
+              </div>
+          </div>
+
+          {/* Lofi Music Player - Mobile Only */}
+          <div className="mt-8 w-full lg:hidden">
+            <LofiPlayer mode={mode} />
+          </div>
+
         </div>
 
-        {/* Controls */}
-        <Controls 
-          isActive={isActive} 
-          onToggle={toggleTimer} 
-          onReset={resetTimer} 
-          mode={mode}
-        />
-
-        {/* Footer Info / Cycle Progress */}
-        <div className="mt-12 w-full">
-            <div className="flex justify-between items-end mb-3 px-1">
-                <span className="text-xs uppercase tracking-wider text-gray-400 dark:text-gray-500 font-bold">Cycle Progress</span>
-                <span className="text-sm font-bold text-gray-700 dark:text-gray-300">
-                    {cycleProgress} <span className="text-gray-400">/</span> {settings.longBreakInterval}
-                </span>
-            </div>
-            
-            {/* Liquid Progress Bar */}
-            <div className="w-full h-2 bg-gray-200/50 dark:bg-gray-700/50 rounded-full overflow-hidden backdrop-blur-sm">
-                <div 
-                    className={`h-full ${MODE_GRADIENTS[mode]} transition-all duration-700 ease-out shadow-[0_0_10px_rgba(0,0,0,0.1)]`} 
-                    style={{ width: `${(cycleProgress / settings.longBreakInterval) * 100}%` }}
-                ></div>
-            </div>
+        {/* Lofi Music Player - Desktop Only */}
+        <div className="hidden lg:block w-full space-y-6 animate-slide-up" style={{ animationDelay: '0.1s' }}>
+          <div className="glass-panel rounded-[2.5rem] p-8 lg:p-10 sticky top-6">
+            <LofiPlayer mode={mode} />
+          </div>
+          
+          {/* FAQ Section - Desktop Only */}
+          <div className="glass-panel rounded-[2.5rem] p-8 lg:p-10">
+            <FaqInline />
+          </div>
         </div>
 
       </div>
@@ -156,6 +179,13 @@ function App() {
         settings={settings}
         onUpdateSettings={setSettings}
       />
+
+      <FaqModal 
+        isOpen={isFaqOpen}
+        onClose={() => setIsFaqOpen(false)}
+      />
+
+      {showCharacter && <MotivationalCharacter mode={mode} isTimerActive={isActive} messageInterval={settings.characterMessageInterval} />}
     </div>
   );
 }

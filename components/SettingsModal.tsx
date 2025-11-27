@@ -110,6 +110,19 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, s
                   className="w-16 bg-white/50 dark:bg-black/20 border border-transparent focus:border-violet-400 rounded-lg px-2 py-1 text-center text-gray-800 dark:text-gray-100 outline-none"
                 />
              </div>
+
+             <div className="flex items-center justify-between p-3 rounded-xl glass-input">
+                <span className="text-gray-700 dark:text-gray-200 font-medium text-sm">Character Message Interval (sec)</span>
+                <input
+                  type="number"
+                  name="characterMessageInterval"
+                  value={settings.characterMessageInterval}
+                  onChange={handleChange}
+                  min="5"
+                  max="120"
+                  className="w-16 bg-white/50 dark:bg-black/20 border border-transparent focus:border-rose-400 rounded-lg px-2 py-1 text-center text-gray-800 dark:text-gray-100 outline-none"
+                />
+             </div>
           </div>
         </div>
       </div>
