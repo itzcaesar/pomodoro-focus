@@ -28,21 +28,47 @@ export async function fetchAestheticBackground(isMobile: boolean = false): Promi
     // Desktop: horizontal, Mobile: vertical
     const orientation = isMobile ? 'vertical' : 'horizontal';
     
-    // Use serverless function to keep API key secure
-    const url = `/api/background?query=${encodeURIComponent(randomQuery)}&orientation=${orientation}`;
-    console.log('Fetching from API route:', { query: randomQuery, orientation });
+    // Check if we're in development (localhost) or production (Vercel)
+    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
     
-    const response = await fetch(url);
-
-    console.log('API Response Status:', response.status, response.statusText);
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      console.error(`API error: ${response.status}`, errorData);
-      throw new Error(`API error: ${response.status}`);
+    let data;
+    
+    if (isDevelopment) {
+      // Local development: call Pixabay API directly with VITE_ prefixed key
+      const apiKey = import.meta.env.VITE_PIXABAY_API_KEY;
+      
+      if (!apiKey) {
+        console.error('Pixabay API key not found. Add VITE_PIXABAY_API_KEY to your .env file');
+        return null;
+      }
+      
+      const url = `https://pixabay.com/api/?key=${apiKey}&q=${encodeURIComponent(randomQuery)}&image_type=photo&orientation=${orientation}&per_page=50&safesearch=true`;
+      console.log('Development: Calling Pixabay directly');
+      
+      const response = await fetch(url);
+      
+      if (!response.ok) {
+        console.error(`Pixabay API error: ${response.status}`);
+        throw new Error(`Pixabay API error: ${response.status}`);
+      }
+      
+      data = await response.json();
+    } else {
+      // Production: use serverless API route
+      const url = `/api/background?query=${encodeURIComponent(randomQuery)}&orientation=${orientation}`;
+      console.log('Production: Using serverless API route');
+      
+      const response = await fetch(url);
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error(`API error: ${response.status}`, errorData);
+        throw new Error(`API error: ${response.status}`);
+      }
+      
+      data = await response.json();
     }
 
-    const data = await response.json();
     console.log('API Response:', { totalHits: data.totalHits, hitsCount: data.hits?.length });
     
     if (!data.hits || data.hits.length === 0) {
