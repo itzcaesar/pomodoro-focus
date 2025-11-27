@@ -230,7 +230,7 @@ function App() {
           {/* Footer Info / Cycle Progress */}
           <div className="mt-12 w-full">
               <div className="flex justify-between items-end mb-3 px-1">
-                  <span className="text-xs uppercase tracking-wider text-gray-400 dark:text-gray-500 font-bold">Cycle Progress</span>
+                  <span className="text-xs uppercase tracking-wider text-gray-600 dark:text-gray-400 font-bold">Cycle Progress</span>
                   <span className="text-sm font-bold text-gray-700 dark:text-gray-300">
                       {cycleProgress} <span className="text-gray-400">/</span> {settings.longBreakInterval}
                   </span>
