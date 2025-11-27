@@ -20,7 +20,8 @@ export const FaqInline: React.FC<FaqInlineProps> = ({ mode }) => {
     [TimerMode.LongBreak]: 'from-violet-50/40 to-fuchsia-50/40 dark:from-violet-900/20 dark:to-fuchsia-900/20 border-violet-200/30 dark:border-violet-700/30',
   };
   return (
-    <div className="w-full max-h-[438px] overflow-y-auto space-y-3">
+    <div className="glass-button rounded-2xl sm:rounded-3xl shadow-xl p-4 sm:p-5">
+      <div className="w-full max-h-[390px] overflow-y-auto space-y-3">
       {/* Header */}
       <div className="flex items-center gap-1.5">
         <div className={`w-6 h-6 rounded-lg ${MODE_GRADIENTS[mode]} flex items-center justify-center shadow-md flex-shrink-0`}>
@@ -105,6 +106,7 @@ export const FaqInline: React.FC<FaqInlineProps> = ({ mode }) => {
         <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
           Named after the tomato-shaped timer Francesco Cirillo used as a student. "Pomodoro" means "tomato" in Italian 🍅
         </p>
+      </div>
       </div>
     </div>
   );

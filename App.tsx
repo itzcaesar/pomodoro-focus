@@ -190,7 +190,7 @@ function App() {
                   <span className={`text-5xl sm:text-6xl font-bold tracking-tighter tabular-nums transition-colors duration-500 ${MODE_COLORS[mode]} drop-shadow-md`}>
                     {formatTime(timeLeft)}
                   </span>
-                  <span className={`mt-2 text-sm font-bold uppercase tracking-[0.25em] transition-all duration-500 ${isCompleted ? 'text-emerald-500 scale-110' : 'text-gray-400 dark:text-gray-500'}`}>
+                  <span className={`mt-2 text-sm font-bold uppercase tracking-[0.25em] transition-all duration-500 ${isCompleted ? 'text-emerald-500 scale-110' : 'text-gray-600 dark:text-gray-400'}`}>
                     {isCompleted ? 'Session Done' : (isActive ? 'Active' : 'Paused')}
                   </span>
                </div>

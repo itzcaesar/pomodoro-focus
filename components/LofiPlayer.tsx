@@ -23,7 +23,7 @@ export const LofiPlayer: React.FC<LofiPlayerProps> = ({ mode }) => {
 
   return (
     <div className="w-full">
-      <div className={`glass-panel rounded-2xl sm:rounded-3xl shadow-xl backdrop-blur-md border ${PLAYER_BORDERS[mode]} bg-gradient-to-br ${PLAYER_GRADIENTS[mode]} overflow-hidden`}>
+      <div className="glass-button rounded-2xl sm:rounded-3xl shadow-xl overflow-hidden">
         
         {/* Header */}
         <button
