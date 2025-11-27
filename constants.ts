@@ -9,6 +9,7 @@ export const DEFAULT_SETTINGS: Settings = {
   autoStartPomodoros: false,
   characterMessageInterval: 15,
   enableBackgrounds: true,
+  spotifyPlaylistUrl: 'https://open.spotify.com/playlist/37i9dQZF1DWWQRwui0ExPn',
 };
 
 // Text colors for minimal accents

@@ -13,13 +13,19 @@ import {
 
 interface LofiPlayerProps {
   mode: TimerMode;
+  playlistUrl: string;
 }
 
-export const LofiPlayer: React.FC<LofiPlayerProps> = ({ mode }) => {
+export const LofiPlayer: React.FC<LofiPlayerProps> = ({ mode, playlistUrl }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   
-  // Playlist ID from the URL: https://open.spotify.com/playlist/37i9dQZF1DWWQRwui0ExPn
-  const playlistId = '37i9dQZF1DWWQRwui0ExPn';
+  // Extract playlist ID from URL
+  const extractPlaylistId = (url: string) => {
+    const match = url.match(/playlist\/([a-zA-Z0-9]+)/);
+    return match ? match[1] : '37i9dQZF1DWWQRwui0ExPn'; // fallback to default
+  };
+  
+  const playlistId = extractPlaylistId(playlistUrl);
 
   return (
     <div className="w-full">

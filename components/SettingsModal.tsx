@@ -124,6 +124,19 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, s
                   className="w-16 bg-white/50 dark:bg-black/20 border border-transparent focus:border-rose-400 rounded-lg px-2 py-1 text-center text-gray-800 dark:text-gray-100 outline-none"
                 />
              </div>
+
+             <div className="p-3 rounded-xl glass-input space-y-2">
+                <span className="text-gray-700 dark:text-gray-200 font-medium text-sm block">Spotify Playlist URL</span>
+                <input
+                  type="text"
+                  name="spotifyPlaylistUrl"
+                  value={settings.spotifyPlaylistUrl}
+                  onChange={(e) => onUpdateSettings({ ...settings, spotifyPlaylistUrl: e.target.value })}
+                  placeholder="https://open.spotify.com/playlist/..."
+                  className="w-full bg-white/50 dark:bg-black/20 border border-transparent focus:border-emerald-400 rounded-lg px-3 py-2 text-sm text-gray-800 dark:text-gray-100 outline-none"
+                />
+                <p className="text-[10px] text-gray-500 dark:text-gray-400">Paste any Spotify playlist URL to customize your music</p>
+             </div>
           </div>
         </div>
       </div>

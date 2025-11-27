@@ -13,6 +13,7 @@ export interface Settings {
   autoStartPomodoros: boolean;
   characterMessageInterval: number;
   enableBackgrounds: boolean;
+  spotifyPlaylistUrl: string;
 }
 
 export interface TimerState {

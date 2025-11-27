@@ -16,7 +16,23 @@ import { fetchAestheticBackground, getPhotographerUrl, getPixabayUrl } from './u
 function App() {
   const [settings, setSettings] = useState<Settings>(() => {
     const saved = localStorage.getItem('pomodoro-settings');
-    return saved ? JSON.parse(saved) : DEFAULT_SETTINGS;
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        // Migrate old settings to include new spotifyPlaylistUrl field
+        const migratedSettings = {
+          ...DEFAULT_SETTINGS,
+          ...parsed,
+          spotifyPlaylistUrl: parsed.spotifyPlaylistUrl || DEFAULT_SETTINGS.spotifyPlaylistUrl
+        };
+        console.log('Loaded settings:', migratedSettings);
+        return migratedSettings;
+      } catch (e) {
+        console.error('Failed to parse settings:', e);
+        return DEFAULT_SETTINGS;
+      }
+    }
+    return DEFAULT_SETTINGS;
   });
 
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -231,7 +247,7 @@ function App() {
 
           {/* Lofi Music Player - Mobile Only */}
           <div className="mt-8 w-full lg:hidden">
-            <LofiPlayer mode={mode} />
+            <LofiPlayer mode={mode} playlistUrl={settings.spotifyPlaylistUrl} />
           </div>
 
         </div>
@@ -239,7 +255,7 @@ function App() {
         {/* Lofi Music Player - Desktop Only */}
         <div className="hidden lg:block w-full space-y-6 animate-slide-up" style={{ animationDelay: '0.1s' }}>
           <div className="glass-panel rounded-[2.5rem] p-8 lg:p-10 sticky top-6">
-            <LofiPlayer mode={mode} />
+            <LofiPlayer mode={mode} playlistUrl={settings.spotifyPlaylistUrl} />
           </div>
           
           {/* FAQ Section - Desktop Only */}
