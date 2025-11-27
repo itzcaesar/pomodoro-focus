@@ -4,6 +4,11 @@ export enum TimerMode {
   LongBreak = 'longBreak',
 }
 
+export enum MusicPlatform {
+  Spotify = 'spotify',
+  YouTube = 'youtube',
+}
+
 export interface Settings {
   focusDuration: number;
   shortBreakDuration: number;
@@ -13,7 +18,9 @@ export interface Settings {
   autoStartPomodoros: boolean;
   characterMessageInterval: number;
   enableBackgrounds: boolean;
+  musicPlatform: MusicPlatform;
   spotifyPlaylistUrl: string;
+  youtubePlaylistUrl: string;
 }
 
 export interface TimerState {

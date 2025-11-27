@@ -7,7 +7,7 @@ import { ProgressRing } from './components/ProgressRing';
 import { Controls } from './components/Controls';
 import { SettingsModal } from './components/SettingsModal';
 import { ModeSelector } from './components/ModeSelector';
-import { LofiPlayer } from './components/LofiPlayer';
+import { MusicPlayer } from './components/MusicPlayer';
 import { FaqModal } from './components/FaqModal';
 import { FaqInline } from './components/FaqInline';
 import { MotivationalCharacter } from './components/MotivationalCharacter';
@@ -19,11 +19,13 @@ function App() {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        // Migrate old settings to include new spotifyPlaylistUrl field
+        // Migrate old settings to include new fields
         const migratedSettings = {
           ...DEFAULT_SETTINGS,
           ...parsed,
-          spotifyPlaylistUrl: parsed.spotifyPlaylistUrl || DEFAULT_SETTINGS.spotifyPlaylistUrl
+          musicPlatform: parsed.musicPlatform || DEFAULT_SETTINGS.musicPlatform,
+          spotifyPlaylistUrl: parsed.spotifyPlaylistUrl || DEFAULT_SETTINGS.spotifyPlaylistUrl,
+          youtubePlaylistUrl: parsed.youtubePlaylistUrl || DEFAULT_SETTINGS.youtubePlaylistUrl
         };
         console.log('Loaded settings:', migratedSettings);
         return migratedSettings;
@@ -245,17 +247,27 @@ function App() {
               </div>
           </div>
 
-          {/* Lofi Music Player - Mobile Only */}
+          {/* Music Player - Mobile Only */}
           <div className="mt-8 w-full lg:hidden">
-            <LofiPlayer mode={mode} playlistUrl={settings.spotifyPlaylistUrl} />
+            <MusicPlayer 
+              mode={mode} 
+              platform={settings.musicPlatform}
+              spotifyUrl={settings.spotifyPlaylistUrl}
+              youtubeUrl={settings.youtubePlaylistUrl}
+            />
           </div>
 
         </div>
 
-        {/* Lofi Music Player - Desktop Only */}
+        {/* Music Player - Desktop Only */}
         <div className="hidden lg:block w-full space-y-6 animate-slide-up" style={{ animationDelay: '0.1s' }}>
           <div className="glass-panel rounded-[2.5rem] p-8 lg:p-10 sticky top-6">
-            <LofiPlayer mode={mode} playlistUrl={settings.spotifyPlaylistUrl} />
+            <MusicPlayer 
+              mode={mode} 
+              platform={settings.musicPlatform}
+              spotifyUrl={settings.spotifyPlaylistUrl}
+              youtubeUrl={settings.youtubePlaylistUrl}
+            />
           </div>
           
           {/* FAQ Section - Desktop Only */}

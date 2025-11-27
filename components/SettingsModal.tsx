@@ -1,5 +1,5 @@
 import React from 'react';
-import { Settings } from '../types';
+import { Settings, MusicPlatform } from '../types';
 import { X } from 'lucide-react';
 
 interface SettingsModalProps {
@@ -125,17 +125,58 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, s
                 />
              </div>
 
+             <div className="space-y-3">
+               <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">Music Platform</h3>
+               
+               <div className="flex gap-3">
+                 <button
+                   onClick={() => onUpdateSettings({ ...settings, musicPlatform: MusicPlatform.YouTube })}
+                   className={`flex-1 p-3 rounded-xl transition-all ${
+                     settings.musicPlatform === MusicPlatform.YouTube
+                       ? 'bg-gradient-to-br from-red-500 to-red-600 text-white shadow-lg'
+                       : 'glass-input text-gray-700 dark:text-gray-300 hover:bg-white/60 dark:hover:bg-white/10'
+                   }`}
+                 >
+                   <div className="text-sm font-semibold">YouTube</div>
+                   <div className="text-[10px] opacity-80">Full playback + volume</div>
+                 </button>
+                 
+                 <button
+                   onClick={() => onUpdateSettings({ ...settings, musicPlatform: MusicPlatform.Spotify })}
+                   className={`flex-1 p-3 rounded-xl transition-all ${
+                     settings.musicPlatform === MusicPlatform.Spotify
+                       ? 'bg-gradient-to-br from-emerald-500 to-emerald-600 text-white shadow-lg'
+                       : 'glass-input text-gray-700 dark:text-gray-300 hover:bg-white/60 dark:hover:bg-white/10'
+                   }`}
+                 >
+                   <div className="text-sm font-semibold">Spotify</div>
+                   <div className="text-[10px] opacity-80">Login required</div>
+                 </button>
+               </div>
+             </div>
+
              <div className="p-3 rounded-xl glass-input space-y-2">
-                <span className="text-gray-700 dark:text-gray-200 font-medium text-sm block">Spotify Playlist URL</span>
+                <span className="text-gray-700 dark:text-gray-200 font-medium text-sm block">
+                  {settings.musicPlatform === MusicPlatform.Spotify ? 'Spotify Playlist URL' : 'YouTube Video/Playlist URL'}
+                </span>
                 <input
                   type="text"
-                  name="spotifyPlaylistUrl"
-                  value={settings.spotifyPlaylistUrl}
-                  onChange={(e) => onUpdateSettings({ ...settings, spotifyPlaylistUrl: e.target.value })}
-                  placeholder="https://open.spotify.com/playlist/..."
+                  name={settings.musicPlatform === MusicPlatform.Spotify ? 'spotifyPlaylistUrl' : 'youtubePlaylistUrl'}
+                  value={settings.musicPlatform === MusicPlatform.Spotify ? settings.spotifyPlaylistUrl : settings.youtubePlaylistUrl}
+                  onChange={(e) => onUpdateSettings({ 
+                    ...settings, 
+                    [settings.musicPlatform === MusicPlatform.Spotify ? 'spotifyPlaylistUrl' : 'youtubePlaylistUrl']: e.target.value 
+                  })}
+                  placeholder={settings.musicPlatform === MusicPlatform.Spotify 
+                    ? 'https://open.spotify.com/playlist/...' 
+                    : 'https://www.youtube.com/watch?v=...'}
                   className="w-full bg-white/50 dark:bg-black/20 border border-transparent focus:border-emerald-400 rounded-lg px-3 py-2 text-sm text-gray-800 dark:text-gray-100 outline-none"
                 />
-                <p className="text-[10px] text-gray-500 dark:text-gray-400">Paste any Spotify playlist URL to customize your music</p>
+                <p className="text-[10px] text-gray-500 dark:text-gray-400">
+                  {settings.musicPlatform === MusicPlatform.Spotify 
+                    ? 'Paste any Spotify playlist URL to customize your music' 
+                    : 'Paste any YouTube video or playlist URL for lofi music'}
+                </p>
              </div>
           </div>
         </div>

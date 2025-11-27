@@ -1,4 +1,4 @@
-import { Settings, TimerMode } from './types';
+import { Settings, TimerMode, MusicPlatform } from './types';
 
 export const DEFAULT_SETTINGS: Settings = {
   focusDuration: 25,
@@ -9,7 +9,9 @@ export const DEFAULT_SETTINGS: Settings = {
   autoStartPomodoros: false,
   characterMessageInterval: 15,
   enableBackgrounds: true,
+  musicPlatform: MusicPlatform.YouTube,
   spotifyPlaylistUrl: 'https://open.spotify.com/playlist/37i9dQZF1DWWQRwui0ExPn',
+  youtubePlaylistUrl: 'https://www.youtube.com/watch?v=jfKfPfyJRdk',
 };
 
 // Text colors for minimal accents
