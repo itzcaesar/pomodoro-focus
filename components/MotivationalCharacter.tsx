@@ -99,7 +99,7 @@ export const MotivationalCharacter: React.FC<MotivationalCharacterProps> = ({ mo
           onClick={() => setIsMinimized(!isMinimized)}
         >
           <img 
-            src="public/char.png" 
+            src="https://iili.io/fB6nUbV.png" 
             alt="Motivational Character" 
             className="w-32 h-32 object-contain drop-shadow-2xl"
           />
