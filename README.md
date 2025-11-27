@@ -36,8 +36,10 @@ Get your free Pixabay API key: https://pixabay.com/api/docs/
 
 - React 19.2.0 + TypeScript 5.8.2
 - Vite 6.2.0 + Tailwind CSS
+- Lucide React Icons
 - YouTube & Spotify Embeds
 - Pixabay API
+- Vercel Hosting
 
 ## 📦 Build & Deploy
 
