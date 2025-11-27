@@ -19,15 +19,10 @@ export const ModeSelector: React.FC<ModeSelectorProps> = ({ currentMode, onSelec
             onClick={() => onSelectMode(mode)}
             className={`
                 relative z-10 flex-1 py-2.5 px-3 sm:px-4 rounded-full text-xs sm:text-sm font-semibold tracking-wide transition-all duration-300
-                ${isActive ? 'text-white shadow-md' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'}
+                ${isActive ? `text-white shadow-md ${MODE_GRADIENTS[mode]}` : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'}
             `}
           >
             <span className="relative z-10">{MODE_LABELS[mode]}</span>
-            
-            {/* Active Background - Simulated liquid fill */}
-            {isActive && (
-                <div className={`absolute inset-0 z-0 rounded-full ${MODE_GRADIENTS[mode]} animate-fade-in`}></div>
-            )}
           </button>
         );
       })}

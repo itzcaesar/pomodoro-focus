@@ -82,12 +82,20 @@ export const MotivationalCharacter: React.FC<MotivationalCharacterProps> = ({ mo
       {/* Speech Bubble */}
       {!isMinimized && (
         <div className="relative animate-bounce-subtle">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl px-4 py-3 shadow-xl border-2 border-rose-200 dark:border-rose-700 max-w-[200px] relative">
+          <div className={`bg-white dark:bg-gray-800 rounded-2xl px-4 py-3 shadow-xl border-2 ${
+            mode === TimerMode.Focus ? 'border-rose-200 dark:border-rose-700' :
+            mode === TimerMode.ShortBreak ? 'border-cyan-200 dark:border-cyan-700' :
+            'border-violet-200 dark:border-violet-700'
+          } max-w-[200px] relative`}>
             <p className="text-sm text-gray-800 dark:text-gray-100 font-medium leading-relaxed">
               {message}
             </p>
             {/* Speech bubble tail pointing down */}
-            <div className="absolute -bottom-2 right-8 w-4 h-4 bg-white dark:bg-gray-800 border-r-2 border-b-2 border-rose-200 dark:border-rose-700 rotate-45 transform origin-center"></div>
+            <div className={`absolute -bottom-2 right-8 w-4 h-4 bg-white dark:bg-gray-800 border-r-2 border-b-2 ${
+              mode === TimerMode.Focus ? 'border-rose-200 dark:border-rose-700' :
+              mode === TimerMode.ShortBreak ? 'border-cyan-200 dark:border-cyan-700' :
+              'border-violet-200 dark:border-violet-700'
+            } rotate-45 transform origin-center`}></div>
           </div>
         </div>
       )}
@@ -118,21 +126,6 @@ export const MotivationalCharacter: React.FC<MotivationalCharacterProps> = ({ mo
           </button>
         </div>
       </div>
-
-      <style>{`
-        @keyframes bounce-subtle {
-          0%, 100% {
-            transform: translateY(0);
-          }
-          50% {
-            transform: translateY(-8px);
-          }
-        }
-        
-        .animate-bounce-subtle {
-          animation: bounce-subtle 3s ease-in-out infinite;
-        }
-      `}</style>
     </div>
   );
 };

@@ -1,12 +1,29 @@
 import React from 'react';
 import { Timer, Coffee, RotateCw, HelpCircle } from 'lucide-react';
+import { TimerMode } from '../types';
+import { MODE_GRADIENTS, MODE_COLORS } from '../constants';
 
-export const FaqInline: React.FC = () => {
+interface FaqInlineProps {
+  mode: TimerMode;
+}
+
+export const FaqInline: React.FC<FaqInlineProps> = ({ mode }) => {
+  const modeColorClasses = {
+    [TimerMode.Focus]: 'border-rose-200 dark:border-rose-700',
+    [TimerMode.ShortBreak]: 'border-cyan-200 dark:border-cyan-700',
+    [TimerMode.LongBreak]: 'border-violet-200 dark:border-violet-700',
+  };
+  
+  const modeBgClasses = {
+    [TimerMode.Focus]: 'from-rose-50/40 to-orange-50/40 dark:from-rose-900/20 dark:to-orange-900/20 border-rose-200/30 dark:border-rose-700/30',
+    [TimerMode.ShortBreak]: 'from-cyan-50/40 to-emerald-50/40 dark:from-cyan-900/20 dark:to-emerald-900/20 border-cyan-200/30 dark:border-cyan-700/30',
+    [TimerMode.LongBreak]: 'from-violet-50/40 to-fuchsia-50/40 dark:from-violet-900/20 dark:to-fuchsia-900/20 border-violet-200/30 dark:border-violet-700/30',
+  };
   return (
     <div className="w-full max-h-[438px] overflow-y-auto space-y-3">
       {/* Header */}
       <div className="flex items-center gap-1.5">
-        <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-rose-400 to-orange-500 dark:from-rose-600 dark:to-orange-700 flex items-center justify-center shadow-md flex-shrink-0">
+        <div className={`w-6 h-6 rounded-lg ${MODE_GRADIENTS[mode]} flex items-center justify-center shadow-md flex-shrink-0`}>
           <HelpCircle size={12} className="text-white" />
         </div>
         <h2 className="text-sm font-bold text-gray-800 dark:text-gray-100">About Pomodoro</h2>
@@ -80,7 +97,7 @@ export const FaqInline: React.FC = () => {
       </div>
 
       {/* Fun Fact */}
-      <div className="p-2.5 bg-gradient-to-br from-rose-50 to-orange-50 dark:from-rose-900/20 dark:to-orange-900/20 rounded-xl border border-rose-200/30 dark:border-rose-700/30">
+      <div className={`p-2.5 bg-gradient-to-br ${modeBgClasses[mode]} rounded-xl border`}>
         <h3 className="text-[10px] font-bold text-gray-800 dark:text-gray-100 flex items-center gap-1.5 mb-1.5 uppercase tracking-wider">
           <RotateCw size={11} className="text-orange-500" />
           Why "Pomodoro"?

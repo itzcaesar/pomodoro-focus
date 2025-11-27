@@ -244,7 +244,7 @@ function App() {
           
           {/* FAQ Section - Desktop Only */}
           <div className="glass-panel rounded-[2.5rem] p-8 lg:p-10">
-            <FaqInline />
+            <FaqInline mode={mode} />
           </div>
         </div>
 

@@ -44,7 +44,7 @@ export const ProgressRing: React.FC<ProgressRingProps> = ({ radius, stroke, prog
 
         {/* Progress Circle with Glow */}
         <circle
-          stroke="currentColor"
+          stroke="var(--color-primary, currentColor)"
           fill="transparent"
           strokeWidth={stroke}
           strokeDasharray={circumference + ' ' + circumference}
@@ -52,7 +52,7 @@ export const ProgressRing: React.FC<ProgressRingProps> = ({ radius, stroke, prog
           r={normalizedRadius}
           cx={radius}
           cy={radius}
-          className={`transition-[stroke-dashoffset] duration-500 ease-linear ${MODE_COLORS[mode]}`}
+          className="transition-[stroke-dashoffset] duration-500 ease-linear"
           strokeLinecap="round"
           filter="url(#glow-filter)"
         />
