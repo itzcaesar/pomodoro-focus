@@ -82,20 +82,20 @@ export const MotivationalCharacter: React.FC<MotivationalCharacterProps> = ({ mo
       {/* Speech Bubble */}
       {!isMinimized && (
         <div className="relative animate-bounce-subtle">
-          <div className={`bg-white dark:bg-gray-800 rounded-2xl px-4 py-3 shadow-xl border-2 ${
-            mode === TimerMode.Focus ? 'border-rose-200 dark:border-rose-700' :
-            mode === TimerMode.ShortBreak ? 'border-cyan-200 dark:border-cyan-700' :
-            'border-violet-200 dark:border-violet-700'
-          } max-w-[200px] relative`}>
+          <div className={`glass-panel rounded-2xl px-4 py-3 shadow-xl border ${
+            mode === TimerMode.Focus ? 'border-amber-200/30 dark:border-amber-700/30' :
+            mode === TimerMode.ShortBreak ? 'border-teal-200/30 dark:border-teal-700/30' :
+            'border-sky-200/30 dark:border-sky-700/30'
+          } max-w-[200px] relative backdrop-blur-xl`}>
             <p className="text-sm text-gray-800 dark:text-gray-100 font-medium leading-relaxed">
               {message}
             </p>
             {/* Speech bubble tail pointing down */}
-            <div className={`absolute -bottom-2 right-8 w-4 h-4 bg-white dark:bg-gray-800 border-r-2 border-b-2 ${
-              mode === TimerMode.Focus ? 'border-rose-200 dark:border-rose-700' :
-              mode === TimerMode.ShortBreak ? 'border-cyan-200 dark:border-cyan-700' :
-              'border-violet-200 dark:border-violet-700'
-            } rotate-45 transform origin-center`}></div>
+            <div className={`glass-panel absolute -bottom-2 right-8 w-4 h-4 backdrop-blur-xl bg-white/40 dark:bg-black/40 border-r border-b ${
+              mode === TimerMode.Focus ? 'border-amber-200/30 dark:border-amber-700/30' :
+              mode === TimerMode.ShortBreak ? 'border-teal-200/30 dark:border-teal-700/30' :
+              'border-sky-200/30 dark:border-sky-700/30'
+            } rotate-45 transform origin-center overflow-hidden`}></div>
           </div>
         </div>
       )}

@@ -16,9 +16,10 @@ interface MusicPlayerProps {
   platform: MusicPlatform;
   spotifyUrl: string;
   youtubeUrl: string;
+  onExpandChange?: (isExpanded: boolean) => void;
 }
 
-export const MusicPlayer: React.FC<MusicPlayerProps> = ({ mode, platform, spotifyUrl, youtubeUrl }) => {
+export const MusicPlayer: React.FC<MusicPlayerProps> = ({ mode, platform, spotifyUrl, youtubeUrl, onExpandChange }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   
   // Extract Spotify playlist ID from URL
@@ -59,7 +60,11 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({ mode, platform, spotif
         
         {/* Header */}
         <button
-          onClick={() => setIsExpanded(!isExpanded)}
+          onClick={() => {
+            const newState = !isExpanded;
+            setIsExpanded(newState);
+            onExpandChange?.(newState);
+          }}
           className={`w-full p-3 sm:p-4 flex items-center justify-between ${PLAYER_HOVER_BG[mode]} transition-colors`}
         >
           <div className="flex items-center gap-2 sm:gap-3">
@@ -81,14 +86,11 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({ mode, platform, spotif
         </button>
 
         {/* Expanded Player */}
-        <div 
-          className={`transition-all duration-300 ease-in-out overflow-hidden ${
-            isExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
-          }`}
-        >
+        {isExpanded && (
           <div className="px-3 pb-3 sm:px-4 sm:pb-4">
             {platform === MusicPlatform.Spotify ? (
               <iframe
+                key={`spotify-expanded-${spotifyId}`}
                 style={{ borderRadius: '12px' }}
                 src={`https://open.spotify.com/embed/playlist/${spotifyId}?utm_source=generator&theme=0`}
                 width="100%"
@@ -100,6 +102,7 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({ mode, platform, spotif
               />
             ) : (
               <iframe
+                key={`youtube-expanded-${youtubeData.id}`}
                 style={{ borderRadius: '12px' }}
                 src={getYoutubeEmbedUrl()}
                 width="100%"
@@ -112,13 +115,14 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({ mode, platform, spotif
               />
             )}
           </div>
-        </div>
+        )}
 
         {/* Compact Player (when collapsed) */}
         {!isExpanded && (
           <div className="px-3 pb-3 sm:px-4 sm:pb-4">
             {platform === MusicPlatform.Spotify ? (
               <iframe
+                key={`spotify-compact-${spotifyId}`}
                 style={{ borderRadius: '12px' }}
                 src={`https://open.spotify.com/embed/playlist/${spotifyId}?utm_source=generator&theme=0`}
                 width="100%"
@@ -130,6 +134,7 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({ mode, platform, spotif
               />
             ) : (
               <iframe
+                key={`youtube-compact-${youtubeData.id}`}
                 style={{ borderRadius: '12px' }}
                 src={getYoutubeEmbedUrl()}
                 width="100%"

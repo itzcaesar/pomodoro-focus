@@ -1,83 +1,67 @@
 # 🍅 Pomodoro Focus Timer
 
-A beautiful, modern Pomodoro timer application with integrated Spotify music player, aesthetic backgrounds, and motivational companion. Built with React, TypeScript, and Tailwind CSS.
+A beautiful, modern Pomodoro timer with integrated music player, aesthetic backgrounds, motivational companion, and productivity tracking. Built with React, TypeScript, and Tailwind CSS.
 
-![Pomodoro Focus Timer](https://img.shields.io/badge/version-2.0.0-brightgreen) ![React](https://img.shields.io/badge/React-19.2.0-blue) ![TypeScript](https://img.shields.io/badge/TypeScript-5.8.2-blue)
+![Pomodoro Focus Timer](https://img.shields.io/badge/version-3.1.0-brightgreen) ![React](https://img.shields.io/badge/React-19.2.0-blue) ![TypeScript](https://img.shields.io/badge/TypeScript-5.8.2-blue)
 
-## ✨ Features
+## ✨ Key Features
 
-### 🎯 Pomodoro Timer
-- **Three timer modes**: Focus (25 min), Short Break (5 min), Long Break (15 min)
-- **Customizable durations** for all timer modes
-- **Cycle tracking** with progress visualization
-- **Auto-start options** for breaks and pomodoros
-- **Visual progress ring** with mode-specific colors
-- **Tab title updates** showing remaining time
-- **Color-synchronized UI** - all components adapt to current timer mode
+### 🎯 Core Timer
+- Three modes: Focus (25min), Short Break (5min), Long Break (15min)
+- Customizable durations, auto-start options, cycle tracking
+- Animated progress ring with mode-based gradients
+- Dynamic favicon showing progress in browser tab
+- Tab title updates with remaining time
+- Pulse animation on completion, breathing when idle
 
-### 🎵 Multi-Platform Music Player
-- **YouTube & Spotify support** - choose your preferred platform
-- **YouTube advantages**: Full playback for free users, built-in volume controls, no login required
-- **Spotify advantages**: Access to official playlists, familiar interface
-- **Custom playlist/video URLs** - paste any URL from either platform
-- **Platform switcher** in settings with visual selection
-- **Mode-synchronized colors** that adapt to Focus/Break modes
-- **Expandable/collapsible** interface for desktop
-- **Responsive design** for mobile and desktop layouts
-- **Default content**: YouTube lofi stream (24/7) and Spotify lofi playlist
+### ⌨️ Keyboard Shortcuts
+- **Space** - Play/Pause | **R** - Reset | **1/2/3** - Switch modes | **Esc** - Close modals
+- Inline keyboard shortcuts button with mode-synced colors
+- All buttons feature mode-based hover colors and focus rings
 
-### 🖼️ Aesthetic Backgrounds
-- **Pixabay API integration** for beautiful, curated background images
-- **Automatic orientation** - horizontal for desktop, vertical for mobile
-- **16 aesthetic search queries** for varied lofi-inspired imagery
-- **Auto-refresh** every hour with new backgrounds
-- **Photographer attribution** with credits overlay
-- **Toggle on/off** via settings
-- **Secure API implementation** - development and production modes
+### 🔔 Notifications
+- Pleasant 3-note chime on completion (Web Audio API)
+- Browser desktop notifications with permission handling
+- Confetti celebration 🎉 on full Pomodoro cycle completion
 
-### 💬 Motivational Character Companion
-- **Cute anime character** that provides encouragement
-- **Dynamic messages** alternating between motivational quotes and fun facts
-- **Customizable interval** (5-120 seconds) via settings
-- **Mode-aware messages**: Motivational during focus, relaxing during breaks
-- **Color-synchronized speech bubbles** matching timer mode
-- **Bounce animation** for engaging interaction
-- **Interactive controls**: Click to minimize bubble, hover to dismiss
-- **Toggle on/off** via controls panel
+### 📊 Statistics
+- Session tracking with total focus/break time
+- Daily session count and streak tracking
+- Recent session history (last 10)
+- Persistent localStorage storage
 
-### 🎨 Beautiful UI/UX
-- **Glassmorphism design** with advanced backdrop blur effects
-- **Consistent blur intensity** across all components
-- **Dark mode support** with pure black panels
-- **Responsive layout**: 
-  - Mobile: Stacked vertical layout
-  - Desktop: Two-column grid with sticky positioning
-- **Smooth animations** throughout the interface
-- **Color-coded modes** with gradients and glows:
-  - Focus: Rose & Orange
-  - Short Break: Cyan & Emerald
-  - Long Break: Violet & Fuchsia
-- **Custom scrollbars** hidden for clean aesthetics
-- **Enhanced text visibility** in both light and dark modes
+### 🎵 Music Player
+- YouTube & Spotify support with custom URLs
+- Expandable/collapsible with smart layout adjustments
+- Mode-synchronized colors (Amber/Teal/Sky)
+- Responsive: mobile stacked, desktop sidebar
 
-### 📚 Educational FAQ Section
-- **Mobile**: Modal popup with full information
-- **Desktop**: Inline sidebar with scrollable content, glassmorphism panel
-- **Comprehensive guide** to Pomodoro Technique
-- **Step-by-step instructions** with numbered list
-- **Benefits overview** and fun facts about the technique
-- **Mode-synchronized colors** for visual consistency
+### 🖼️ Backgrounds
+- Pixabay API integration with hourly auto-refresh
+- Orientation-aware (horizontal desktop, vertical mobile)
+- Photographer attribution overlay
 
-### ⚙️ Customization Options
-- **Timer Durations**: Adjust focus, short break, and long break times
-- **Long Break Interval**: Set cycle count before long break
-- **Auto-start Settings**: Enable/disable auto-starting
-- **Character Message Interval**: Control how often motivational messages change
-- **Music Platform**: Choose between YouTube or Spotify
-- **Custom Music URLs**: Paste YouTube video/playlist or Spotify playlist links
-- **Aesthetic Backgrounds**: Toggle background images on/off
-- **Theme Toggle**: Switch between light and dark modes
-- **Character Toggle**: Show/hide the motivational companion
+### 💬 Motivational Character
+- Glassmorphism speech bubbles with mode-based borders
+- Alternating quotes and fun facts during focus
+- Relaxing messages during breaks
+- Customizable message interval (5-120s)
+- Click to minimize, hover to dismiss
+
+### 🎨 UI/UX
+- **Enhanced glassmorphism** - 24px blur, multi-layer shadows, gradient borders
+- **Color palette**: Amber→Orange (Focus), Teal→Emerald (Break), Sky→Blue (Long Break)
+- **Dark mode** with pure black panels for OLED
+- **Responsive grid** - mobile stacked, desktop 2-column with sticky positioning
+- **Accessibility** - ARIA labels, keyboard navigation, focus indicators
+
+### ⚙️ Customization
+- All timer durations, auto-start settings
+- Sound/notification toggles
+- Music platform & URL selection
+- Background image toggle
+- Character message interval
+- Theme toggle (light/dark)
 
 ## 🚀 Getting Started
 

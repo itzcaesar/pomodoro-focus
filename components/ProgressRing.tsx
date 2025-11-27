@@ -14,6 +14,10 @@ export const ProgressRing: React.FC<ProgressRingProps> = ({ radius, stroke, prog
   const circumference = normalizedRadius * 2 * Math.PI;
   const strokeDashoffset = circumference - (progress / 100) * circumference;
 
+  // Gradient IDs based on mode
+  const gradientId = `gradient-${mode}`;
+  const glowId = `glow-${mode}`;
+
   return (
     <div className="relative flex items-center justify-center">
       <svg
@@ -22,16 +26,36 @@ export const ProgressRing: React.FC<ProgressRingProps> = ({ radius, stroke, prog
         className="transform -rotate-90 transition-all duration-300 overflow-visible"
       >
         <defs>
-          <filter id="glow-filter" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="3.5" result="coloredBlur"/>
+          {/* Gradient for Focus mode - Amber to Orange */}
+          <linearGradient id="gradient-focus" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#fbbf24" />
+            <stop offset="100%" stopColor="#f97316" />
+          </linearGradient>
+          
+          {/* Gradient for Short Break - Teal to Emerald */}
+          <linearGradient id="gradient-shortBreak" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#2dd4bf" />
+            <stop offset="100%" stopColor="#10b981" />
+          </linearGradient>
+          
+          {/* Gradient for Long Break - Sky to Blue */}
+          <linearGradient id="gradient-longBreak" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#38bdf8" />
+            <stop offset="100%" stopColor="#3b82f6" />
+          </linearGradient>
+
+          {/* Enhanced glow filter */}
+          <filter id={glowId} x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
             <feMerge>
+                <feMergeNode in="coloredBlur"/>
                 <feMergeNode in="coloredBlur"/>
                 <feMergeNode in="SourceGraphic"/>
             </feMerge>
           </filter>
         </defs>
 
-        {/* Background Track */}
+        {/* Background Track with subtle glow */}
         <circle
           stroke="currentColor"
           fill="transparent"
@@ -39,22 +63,23 @@ export const ProgressRing: React.FC<ProgressRingProps> = ({ radius, stroke, prog
           r={normalizedRadius}
           cx={radius}
           cy={radius}
-          className="text-gray-200/50 dark:text-white/5"
+          className="text-gray-200/60 dark:text-white/8"
+          style={{ filter: 'drop-shadow(0 0 2px rgba(0,0,0,0.1))' }}
         />
 
-        {/* Progress Circle with Glow */}
+        {/* Progress Circle with Gradient and Enhanced Glow */}
         <circle
-          stroke="var(--color-primary, currentColor)"
+          stroke={`url(#${gradientId})`}
           fill="transparent"
-          strokeWidth={stroke}
+          strokeWidth={stroke + 1}
           strokeDasharray={circumference + ' ' + circumference}
           style={{ strokeDashoffset }}
           r={normalizedRadius}
           cx={radius}
           cy={radius}
-          className="transition-[stroke-dashoffset] duration-500 ease-linear"
+          className="transition-[stroke-dashoffset] duration-500 ease-out"
           strokeLinecap="round"
-          filter="url(#glow-filter)"
+          filter={`url(#${glowId})`}
         />
       </svg>
     </div>

@@ -11,7 +11,13 @@ import { MusicPlayer } from './components/MusicPlayer';
 import { FaqModal } from './components/FaqModal';
 import { FaqInline } from './components/FaqInline';
 import { MotivationalCharacter } from './components/MotivationalCharacter';
+import { AboutModal } from './components/AboutModal';
+import { Confetti } from './components/Confetti';
+import { KeyboardShortcutsHelp } from './components/KeyboardShortcutsHelp';
+import { StatisticsModal } from './components/StatisticsModal';
 import { fetchAestheticBackground, getPhotographerUrl, getPixabayUrl } from './utils/pixabay';
+import { requestNotificationPermission } from './utils/notifications';
+import { updateFavicon } from './utils/favicon';
 
 function App() {
   const [settings, setSettings] = useState<Settings>(() => {
@@ -25,7 +31,9 @@ function App() {
           ...parsed,
           musicPlatform: parsed.musicPlatform || DEFAULT_SETTINGS.musicPlatform,
           spotifyPlaylistUrl: parsed.spotifyPlaylistUrl || DEFAULT_SETTINGS.spotifyPlaylistUrl,
-          youtubePlaylistUrl: parsed.youtubePlaylistUrl || DEFAULT_SETTINGS.youtubePlaylistUrl
+          youtubePlaylistUrl: parsed.youtubePlaylistUrl || DEFAULT_SETTINGS.youtubePlaylistUrl,
+          enableSounds: parsed.enableSounds !== undefined ? parsed.enableSounds : DEFAULT_SETTINGS.enableSounds,
+          enableNotifications: parsed.enableNotifications !== undefined ? parsed.enableNotifications : DEFAULT_SETTINGS.enableNotifications
         };
         console.log('Loaded settings:', migratedSettings);
         return migratedSettings;
@@ -44,13 +52,18 @@ function App() {
 
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isFaqOpen, setIsFaqOpen] = useState(false);
+  const [isAboutOpen, setIsAboutOpen] = useState(false);
+  const [isStatsOpen, setIsStatsOpen] = useState(false);
+  const [isKeyboardShortcutsOpen, setIsKeyboardShortcutsOpen] = useState(false);
   const [showCharacter, setShowCharacter] = useState(() => {
     const saved = localStorage.getItem('pomodoro-show-character');
     return saved ? saved === 'true' : true;
   });
+  const [isMusicPlayerExpanded, setIsMusicPlayerExpanded] = useState(false);
   const [backgroundImage, setBackgroundImage] = useState<PixabayImage | null>(null);
   const [showBackgroundCredit, setShowBackgroundCredit] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
 
   const {
     mode,
@@ -81,6 +94,64 @@ function App() {
   useEffect(() => {
     localStorage.setItem('pomodoro-show-character', showCharacter.toString());
   }, [showCharacter]);
+
+  // Request notification permission on mount if enabled
+  useEffect(() => {
+    if (settings.enableNotifications) {
+      requestNotificationPermission();
+    }
+  }, [settings.enableNotifications]);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      // Don't trigger if user is typing in an input
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+
+      switch (e.key.toLowerCase()) {
+        case ' ':
+          e.preventDefault();
+          toggleTimer();
+          break;
+        case 'r':
+          e.preventDefault();
+          resetTimer();
+          break;
+        case '1':
+          e.preventDefault();
+          setMode(TimerMode.Focus);
+          resetTimer();
+          break;
+        case '2':
+          e.preventDefault();
+          setMode(TimerMode.ShortBreak);
+          resetTimer();
+          break;
+        case '3':
+          e.preventDefault();
+          setMode(TimerMode.LongBreak);
+          resetTimer();
+          break;
+        case 'escape':
+          e.preventDefault();
+          // Blur the currently focused element to remove focus ring
+          if (document.activeElement instanceof HTMLElement) {
+            document.activeElement.blur();
+          }
+          setIsSettingsOpen(false);
+          setIsFaqOpen(false);
+          setIsAboutOpen(false);
+          setIsStatsOpen(false);
+          setIsKeyboardShortcutsOpen(false);
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [toggleTimer, resetTimer, setMode]);
 
   // Detect mobile/desktop for background orientation
   useEffect(() => {
@@ -129,6 +200,10 @@ function App() {
     const timeString = `${minutes}:${seconds.toString().padStart(2, '0')}`;
     const status = isCompleted ? 'Completed!' : (mode === TimerMode.Focus ? 'Focus' : 'Break');
     document.title = `${timeString} - ${status}`;
+    
+    // Update favicon with progress
+    const progress = calculateProgress();
+    updateFavicon(progress, mode);
   }, [timeLeft, mode, isCompleted]);
 
   const formatTime = (seconds: number) => {
@@ -144,6 +219,14 @@ function App() {
 
   // Correct cycle calculation: 1-based index for display, modulo for progress bar
   const cycleProgress = (cycleCount - 1) % settings.longBreakInterval + 1;
+
+  // Trigger confetti when completing a full cycle (before long break)
+  useEffect(() => {
+    if (isCompleted && mode === TimerMode.Focus && cycleProgress === settings.longBreakInterval) {
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 3500);
+    }
+  }, [isCompleted, mode, cycleProgress, settings.longBreakInterval]);
 
   return (
     <div 
@@ -184,7 +267,9 @@ function App() {
       <div className="w-full max-w-7xl lg:grid lg:grid-cols-2 lg:gap-6 lg:items-start">
         
         {/* Timer Card */}
-        <div className="relative w-full glass-panel rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 lg:p-12 z-10 animate-slide-up flex flex-col items-center lg:sticky lg:top-6">
+        <div className={`relative w-full glass-panel rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 lg:p-12 z-10 animate-slide-up flex flex-col items-center lg:sticky lg:top-6 transition-all duration-500 hover:shadow-2xl ${isMusicPlayerExpanded ? 'lg:max-h-screen' : ''}`} style={{
+          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.15), 0 8px 16px rgba(0, 0, 0, 0.08)'
+        }}>
 
           {/* Mode Selector */}
           <div className="mb-8 sm:mb-12 w-full">
@@ -195,7 +280,7 @@ function App() {
           </div>
 
           {/* Timer Display */}
-          <div className={`relative transition-all duration-700 ease-out transform ${isCompleted ? 'scale-110' : ''}`}>
+          <div className={`relative transition-all duration-700 ease-out transform ${isCompleted ? 'scale-110 animate-pulse-glow' : (!isActive ? 'animate-breathe' : '')}`}>
             <div className="relative flex flex-col items-center justify-center">
                <ProgressRing 
                  radius={140} 
@@ -205,10 +290,16 @@ function App() {
                />
                
                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none select-none">
-                  <span className={`text-5xl sm:text-6xl font-bold tracking-tighter tabular-nums transition-colors duration-500 ${MODE_COLORS[mode]} drop-shadow-md`}>
+                  <span className={`text-5xl sm:text-6xl font-bold tracking-tighter tabular-nums transition-all duration-500 ${MODE_COLORS[mode].text} ${isCompleted ? 'animate-pulse-glow' : ''}`} style={{
+                    textShadow: '0 2px 20px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1)',
+                    WebkitFontSmoothing: 'antialiased',
+                    letterSpacing: '-0.02em'
+                  }}>
                     {formatTime(timeLeft)}
                   </span>
-                  <span className={`mt-2 text-sm font-bold uppercase tracking-[0.25em] transition-all duration-500 ${isCompleted ? 'text-emerald-500 scale-110' : 'text-gray-600 dark:text-gray-400'}`}>
+                  <span className={`mt-3 text-sm font-bold uppercase tracking-[0.3em] transition-all duration-500 ${isCompleted ? 'text-emerald-500 scale-110 animate-pulse-glow' : 'text-gray-600 dark:text-gray-400'}`} style={{
+                    textShadow: isCompleted ? '0 0 20px rgba(16, 185, 129, 0.4)' : 'none'
+                  }}>
                     {isCompleted ? 'Session Done' : (isActive ? 'Active' : 'Paused')}
                   </span>
                </div>
@@ -225,6 +316,9 @@ function App() {
             onToggleTheme={() => setIsDarkMode(!isDarkMode)}
             onOpenSettings={() => setIsSettingsOpen(true)}
             onOpenFaq={() => setIsFaqOpen(true)}
+            onOpenAbout={() => setIsAboutOpen(true)}
+            onOpenStats={() => setIsStatsOpen(true)}
+            onOpenKeyboardShortcuts={() => setIsKeyboardShortcutsOpen(true)}
             showCharacter={showCharacter}
             onToggleCharacter={() => setShowCharacter(!showCharacter)}
           />
@@ -238,22 +332,29 @@ function App() {
                   </span>
               </div>
               
-              {/* Liquid Progress Bar */}
-              <div className="w-full h-2 bg-gray-200/50 dark:bg-gray-700/50 rounded-full overflow-hidden backdrop-blur-sm">
+              {/* Enhanced Progress Bar */}
+              <div className="w-full h-2.5 bg-gray-200/60 dark:bg-gray-700/60 rounded-full overflow-hidden backdrop-blur-sm" style={{
+                boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.1)'
+              }}>
                   <div 
-                      className={`h-full ${MODE_GRADIENTS[mode]} transition-all duration-700 ease-out shadow-[0_0_10px_rgba(0,0,0,0.1)]`} 
-                      style={{ width: `${(cycleProgress / settings.longBreakInterval) * 100}%` }}
+                      className={`h-full ${MODE_GRADIENTS[mode]} transition-all duration-700 ease-out rounded-full`} 
+                      style={{ 
+                        width: `${(cycleProgress / settings.longBreakInterval) * 100}%`,
+                        boxShadow: '0 0 12px rgba(0, 0, 0, 0.2), 0 0 24px currentColor',
+                        filter: 'brightness(1.1)'
+                      }}
                   ></div>
               </div>
           </div>
 
           {/* Music Player - Mobile Only */}
-          <div className="mt-8 w-full lg:hidden">
+          <div className={`w-full lg:hidden transition-all duration-300 ${isMusicPlayerExpanded ? 'mt-6' : 'mt-8'}`}>
             <MusicPlayer 
               mode={mode} 
               platform={settings.musicPlatform}
               spotifyUrl={settings.spotifyPlaylistUrl}
               youtubeUrl={settings.youtubePlaylistUrl}
+              onExpandChange={setIsMusicPlayerExpanded}
             />
           </div>
 
@@ -261,12 +362,13 @@ function App() {
 
         {/* Music Player - Desktop Only */}
         <div className="hidden lg:block w-full space-y-6 animate-slide-up" style={{ animationDelay: '0.1s' }}>
-          <div className="glass-panel rounded-[2.5rem] p-8 lg:p-10 sticky top-6">
+          <div className={`glass-panel rounded-[2.5rem] p-8 lg:p-10 sticky top-6 transition-all duration-300`}>
             <MusicPlayer 
               mode={mode} 
               platform={settings.musicPlatform}
               spotifyUrl={settings.spotifyPlaylistUrl}
               youtubeUrl={settings.youtubePlaylistUrl}
+              onExpandChange={setIsMusicPlayerExpanded}
             />
           </div>
           
@@ -288,6 +390,26 @@ function App() {
       <FaqModal 
         isOpen={isFaqOpen}
         onClose={() => setIsFaqOpen(false)}
+      />
+
+      <AboutModal 
+        isOpen={isAboutOpen}
+        onClose={() => setIsAboutOpen(false)}
+        mode={mode}
+      />
+
+      <StatisticsModal 
+        isOpen={isStatsOpen}
+        onClose={() => setIsStatsOpen(false)}
+        mode={mode}
+      />
+
+      <Confetti trigger={showConfetti} />
+
+      <KeyboardShortcutsHelp 
+        isOpen={isKeyboardShortcutsOpen}
+        onClose={() => setIsKeyboardShortcutsOpen(false)}
+        mode={mode}
       />
 
       {showCharacter && <MotivationalCharacter mode={mode} isTimerActive={isActive} messageInterval={settings.characterMessageInterval} />}

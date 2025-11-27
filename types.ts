@@ -21,6 +21,8 @@ export interface Settings {
   musicPlatform: MusicPlatform;
   spotifyPlaylistUrl: string;
   youtubePlaylistUrl: string;
+  enableSounds: boolean;
+  enableNotifications: boolean;
 }
 
 export interface TimerState {

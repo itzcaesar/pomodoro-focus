@@ -84,7 +84,9 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, s
              {[
                { label: 'Auto-start Breaks', name: 'autoStartBreaks', color: 'bg-emerald-500' },
                { label: 'Auto-start Pomodoros', name: 'autoStartPomodoros', color: 'bg-emerald-500' },
-               { label: 'Aesthetic Backgrounds', name: 'enableBackgrounds', color: 'bg-rose-500' }
+               { label: 'Sound Notifications', name: 'enableSounds', color: 'bg-amber-500' },
+               { label: 'Browser Notifications', name: 'enableNotifications', color: 'bg-sky-500' },
+               { label: 'Aesthetic Backgrounds', name: 'enableBackgrounds', color: 'bg-teal-500' }
              ].map((item) => (
                 <div key={item.name} className="flex items-center justify-between p-3 rounded-xl glass-input">
                     <span className="text-gray-700 dark:text-gray-200 font-medium text-sm">{item.label}</span>

@@ -1,6 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { TimerMode, Settings } from '../types';
 import { playNotificationSound } from '../utils/sound';
+import { playCompletionSound } from '../utils/audio';
+import { notifyTimerComplete } from '../utils/notifications';
+import { recordSession } from '../utils/statistics';
 
 export const useTimer = (settings: Settings) => {
   const [mode, setMode] = useState<TimerMode>(TimerMode.Focus);
@@ -76,7 +79,21 @@ export const useTimer = (settings: Settings) => {
       setTimeLeft(0);
       setIsActive(false);
       setIsCompleted(true); // Trigger completion state
-      playNotificationSound();
+      
+      // Record completed session
+      const duration = getDurationForMode(mode, settings);
+      recordSession(mode, Math.floor(duration / 60), true);
+      
+      // Play sound if enabled
+      if (settings.enableSounds) {
+        playCompletionSound();
+      }
+      
+      // Show notification if enabled
+      if (settings.enableNotifications) {
+        notifyTimerComplete(mode);
+      }
+      
       endTimeRef.current = null;
       
       // Delay switch to allow visual cue of completion
@@ -117,21 +134,6 @@ export const useTimer = (settings: Settings) => {
     if (isActive) pauseTimer();
     else startTimer();
   };
-
-  // Keyboard shortcuts
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.code === 'Space') {
-        e.preventDefault(); // Prevent scrolling
-        toggleTimer();
-      } else if (e.code === 'KeyR') {
-        resetTimer();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isActive, timeLeft, mode, isCompleted]); 
 
   return {
     mode,
