@@ -1,295 +1,76 @@
 # 🍅 Pomodoro Focus Timer
 
-A beautiful, modern Pomodoro timer with integrated music player, aesthetic backgrounds, motivational companion, and productivity tracking. Built with React, TypeScript, and Tailwind CSS.
+A beautiful, modern Pomodoro timer with integrated music player, aesthetic backgrounds, motivational companion, and productivity tracking.
 
-![Pomodoro Focus Timer](https://img.shields.io/badge/version-3.1.0-brightgreen) ![React](https://img.shields.io/badge/React-19.2.0-blue) ![TypeScript](https://img.shields.io/badge/TypeScript-5.8.2-blue)
+![Version](https://img.shields.io/badge/version-3.1.0-brightgreen) ![React](https://img.shields.io/badge/React-19.2.0-blue) ![TypeScript](https://img.shields.io/badge/TypeScript-5.8.2-blue)
 
-## ✨ Key Features
+## ✨ Features
 
-### 🎯 Core Timer
-- Three modes: Focus (25min), Short Break (5min), Long Break (15min)
-- Customizable durations, auto-start options, cycle tracking
-- Animated progress ring with mode-based gradients
-- Dynamic favicon showing progress in browser tab
-- Tab title updates with remaining time
-- Pulse animation on completion, breathing when idle
+- **🎯 Timer**: Focus (25min), Short Break (5min), Long Break (15min) with customizable durations
+- **⌨️ Shortcuts**: Space (play/pause), R (reset), 1/2/3 (modes), Esc (close)
+- **🔔 Notifications**: Sound chime + browser alerts + confetti on cycle completion
+- **📊 Statistics**: Session tracking, streaks, focus/break time, history
+- **🎵 Music**: YouTube & Spotify support with custom URLs
+- **🖼️ Backgrounds**: Pixabay API with hourly refresh
+- **💬 Character**: Motivational companion with glassmorphism speech bubbles
+- **🎨 UI**: Enhanced glassmorphism, dark mode, mode-synced colors (Amber/Teal/Sky)
 
-### ⌨️ Keyboard Shortcuts
-- **Space** - Play/Pause | **R** - Reset | **1/2/3** - Switch modes | **Esc** - Close modals
-- Inline keyboard shortcuts button with mode-synced colors
-- All buttons feature mode-based hover colors and focus rings
+## 🚀 Quick Start
 
-### 🔔 Notifications
-- Pleasant 3-note chime on completion (Web Audio API)
-- Browser desktop notifications with permission handling
-- Confetti celebration 🎉 on full Pomodoro cycle completion
-
-### 📊 Statistics
-- Session tracking with total focus/break time
-- Daily session count and streak tracking
-- Recent session history (last 10)
-- Persistent localStorage storage
-
-### 🎵 Music Player
-- YouTube & Spotify support with custom URLs
-- Expandable/collapsible with smart layout adjustments
-- Mode-synchronized colors (Amber/Teal/Sky)
-- Responsive: mobile stacked, desktop sidebar
-
-### 🖼️ Backgrounds
-- Pixabay API integration with hourly auto-refresh
-- Orientation-aware (horizontal desktop, vertical mobile)
-- Photographer attribution overlay
-
-### 💬 Motivational Character
-- Glassmorphism speech bubbles with mode-based borders
-- Alternating quotes and fun facts during focus
-- Relaxing messages during breaks
-- Customizable message interval (5-120s)
-- Click to minimize, hover to dismiss
-
-### 🎨 UI/UX
-- **Enhanced glassmorphism** - 24px blur, multi-layer shadows, gradient borders
-- **Color palette**: Amber→Orange (Focus), Teal→Emerald (Break), Sky→Blue (Long Break)
-- **Dark mode** with pure black panels for OLED
-- **Responsive grid** - mobile stacked, desktop 2-column with sticky positioning
-- **Accessibility** - ARIA labels, keyboard navigation, focus indicators
-
-### ⚙️ Customization
-- All timer durations, auto-start settings
-- Sound/notification toggles
-- Music platform & URL selection
-- Background image toggle
-- Character message interval
-- Theme toggle (light/dark)
-
-## 🚀 Getting Started
-
-### Prerequisites
-- Node.js (v16 or higher)
-- npm or yarn
-
-### Installation
-
-1. Clone the repository
 ```bash
+# Clone & install
 git clone https://github.com/itzcaesar/pomodoro-focus.git
 cd pomodoro-focus
-```
-
-2. Install dependencies
-```bash
 npm install
-```
 
-3. Set up environment variables
-Create a `.env` file in the root directory:
-```env
-# For development (local testing)
-VITE_PIXABAY_API_KEY=your_pixabay_api_key_here
+# Setup .env
+VITE_PIXABAY_API_KEY=your_key_here
 
-# For production (Vercel deployment)
-PIXABAY_API_KEY=your_pixabay_api_key_here
-```
-
-Get your free Pixabay API key at: https://pixabay.com/api/docs/
-
-4. Start development server
-```bash
+# Run
 npm run dev
 ```
 
-5. Open your browser and navigate to `http://localhost:3000`
+Get your free Pixabay API key: https://pixabay.com/api/docs/
 
-### Build for Production
+## 🛠️ Tech Stack
+
+- React 19.2.0 + TypeScript 5.8.2
+- Vite 6.2.0 + Tailwind CSS
+- Lucide React Icons
+- YouTube & Spotify Embeds
+- Pixabay API
+- Vercel Hosting
+
+## 📦 Build & Deploy
 
 ```bash
 npm run build
-```
-
-Preview production build:
-```bash
 npm run preview
+
+# Deploy to Vercel
+# Add PIXABAY_API_KEY env variable in dashboard
 ```
 
-### Deployment to Vercel
+## 🎨 Color Modes
 
-1. Push your code to GitHub
-2. Import project to Vercel
-3. Add environment variable `PIXABAY_API_KEY` in Vercel dashboard
-4. Deploy!
+- **Focus**: Amber → Orange
+- **Short Break**: Teal → Emerald  
+- **Long Break**: Sky → Blue
 
-The app includes a serverless API route (`/api/background`) for secure API key handling in production.
+All UI components sync with active mode.
 
-## 🎨 Tech Stack
+## 💾 Persistence
 
-- **React 19.2.0** - UI Framework
-- **TypeScript 5.8.2** - Type Safety
-- **Vite 6.2.0** - Build Tool & Dev Server
-- **Tailwind CSS** - Utility-First Styling
-- **Lucide React** - Icon Library
-- **YouTube & Spotify Embeds** - Multi-platform Music
-- **Pixabay API** - Background Images
-- **Vercel** - Hosting & Serverless Functions
-
-## 📁 Project Structure
-
-```
-pomodoro-focus/
-├── api/
-│   └── background.ts            # Vercel serverless function for Pixabay API
-├── components/
-│   ├── Controls.tsx             # Timer controls with theme/settings
-│   ├── FaqInline.tsx           # Desktop FAQ sidebar with glassmorphism
-│   ├── FaqModal.tsx            # Mobile FAQ modal
-│   ├── MusicPlayer.tsx         # Multi-platform music player (YouTube/Spotify)
-│   ├── ModeSelector.tsx        # Timer mode switcher with color sync
-│   ├── MotivationalCharacter.tsx # Animated companion with mode-based colors
-│   ├── ProgressRing.tsx        # Circular timer progress
-│   └── SettingsModal.tsx       # Settings with platform switcher & URLs
-├── hooks/
-│   └── useTimer.ts             # Timer logic & state management
-├── utils/
-│   ├── pixabay.ts              # Pixabay API integration with dev/prod modes
-│   └── sound.ts                # Audio notifications
-├── App.tsx                     # Main application with background system
-├── constants.ts                # Mode colors, gradients, player styles
-├── types.ts                    # TypeScript definitions with Settings interface
-├── index.tsx                   # Application entry point
-└── index.html                  # HTML with global CSS and animations
-```
-
-## 🎯 How to Use
-
-1. **Select Mode**: Choose between Focus, Short Break, or Long Break
-2. **Customize Settings**: Click the settings icon to adjust durations and preferences
-3. **Add Your Playlist**: Paste any Spotify playlist URL in settings for custom music
-4. **Start Timer**: Hit the play button to begin your session
-5. **Enjoy Music**: Expand the Spotify player to browse and play your playlist
-6. **Stay Motivated**: Read messages from your companion character
-7. **Track Progress**: Watch your cycle count toward the next long break
-8. **Toggle Backgrounds**: Enable aesthetic backgrounds for a more immersive experience
-
-## 🎨 Color System
-
-The app uses a comprehensive color synchronization system:
-
-- **Focus Mode**: Rose & Orange gradients
-  - Timer ring, mode selector, FAQ icon, character bubble
-- **Short Break**: Cyan & Emerald tones
-  - All UI elements adapt to calming blue-green palette
-- **Long Break**: Violet & Fuchsia hues
-  - Purple gradients across all synchronized components
-
-### Glassmorphism Design
-- **glass-button**: 10px blur for controls and smaller panels
-- **glass-panel**: 20px blur for main containers
-- **Dark mode**: Pure black (`rgba(0,0,0,0.6)`) panels for true OLED black
-- **Light mode**: Bright, translucent white panels
-
-## 💾 Data Persistence
-
-All settings and preferences are saved to `localStorage`:
-- Timer durations
-- Auto-start preferences
-- Dark mode preference
-- Character visibility toggle
-- Message interval settings
-- Music platform choice (YouTube/Spotify)
-- Custom YouTube/Spotify URLs
-- Background toggle preference
-
-Settings migrate automatically when new features are added.
-
-## 🎵 Music Setup
-
-### Choosing Your Platform
-1. Open Settings
-2. Click on either **YouTube** or **Spotify** button
-3. Paste your custom URL (optional)
-
-### YouTube (Recommended)
-- ✅ **No login required**
-- ✅ **Full playback** for all users
-- ✅ **Volume controls** built-in
-- ✅ Works with videos and playlists
-- Default: Lofi Girl 24/7 stream
-
-**How to use:**
-1. Find any lofi video or playlist on YouTube
-2. Copy the URL
-3. Paste in Settings → YouTube Playlist URL
-4. Enjoy full control over playback!
-
-### Spotify
-- Requires login for full songs (otherwise 30-second previews)
-- Great for official curated playlists
-- Default: Spotify "Lofi Beats" playlist
-
-**How to use:**
-1. Find any playlist on Spotify
-2. Click "Share" → "Copy playlist link"
-3. Paste in Settings → Spotify Playlist URL
-4. Log into Spotify in the player for full playback
-
-## 🖼️ Background Images
-
-Powered by Pixabay API with:
-- **16 aesthetic queries**: lofi aesthetic, cozy aesthetic, pastel colors, etc.
-- **Automatic orientation**: Horizontal (desktop) / Vertical (mobile)
-- **Hourly refresh**: New background every hour
-- **Credit system**: 5-second photographer attribution overlay
-- **Secure implementation**: API key hidden via serverless function in production
+Settings, preferences, and stats saved to localStorage with automatic migration.
 
 ## 📝 License
 
-This project is open source and available under the MIT License.
-
-## 🤝 Contributing
-
-Contributions, issues, and feature requests are welcome! Feel free to check the issues page.
+MIT License - Open source and free to use.
 
 ## 👨‍💻 Author
 
-**itzcaesar**
-- GitHub: [@itzcaesar](https://github.com/itzcaesar)
-
-## 🙏 Acknowledgments
-
-- Inspired by the Pomodoro Technique® by Francesco Cirillo
-- Design inspired by modern glassmorphism trends
-- Character image from [source URL]
-- Background images provided by [Pixabay](https://pixabay.com)
-- Music integration powered by [Spotify](https://spotify.com)
-- Lofi music community for focus-enhancing playlists
-
-## 🔧 Recent Updates (v2.0.0)
-
-### New Features
-- 🎵 **Multi-platform music player** - YouTube and Spotify support with platform switcher
-- ✨ Custom YouTube video/playlist URLs
-- ✨ Custom Spotify playlist support
-- 🖼️ Pixabay API integration for aesthetic backgrounds
-- 🎨 Complete color synchronization across all UI components
-- 💫 Enhanced glassmorphism with consistent blur effects
-- 🌓 Improved dark mode with pure black panels
-- 📱 Better responsive design for mobile/desktop
-
-### Improvements
-- YouTube as default platform (no login, full playback, volume controls)
-- Settings migration system for backward compatibility
-- Dual-mode API handling (development/production)
-- Enhanced text visibility in both themes
-- Optimized background image loading
-- Secure API key management with Vercel serverless functions
-- Platform-specific URL validation and parsing
-
-### Bug Fixes
-- Fixed mode selector gradient issues
-- Resolved FAQ and player blur inconsistencies
-- Improved localStorage handling for new settings
-- Fixed background orientation detection
+**itzcaesar** - [@itzcaesar](https://github.com/itzcaesar)
 
 ---
 
-Made with ❤️ and ☕ for productive work sessions
+Made with ❤️ for productive work sessions
