@@ -21,7 +21,7 @@ export const FaqInline: React.FC<FaqInlineProps> = ({ mode }) => {
   };
   return (
     <div className="glass-button rounded-2xl sm:rounded-3xl shadow-xl p-4 sm:p-5">
-      <div className="w-full max-h-[410px] overflow-y-auto space-y-3">
+      <div className="w-full max-h-[395px] overflow-y-auto space-y-3">
       {/* Header */}
       <div className="flex items-center gap-1.5">
         <div className={`w-6 h-6 rounded-lg ${MODE_GRADIENTS[mode]} flex items-center justify-center shadow-md flex-shrink-0`}>
