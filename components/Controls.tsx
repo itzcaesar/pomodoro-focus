@@ -81,14 +81,14 @@ export const Controls: React.FC<ControlsProps> = memo(({
         </button>
       </div>
 
-      {/* Secondary Controls - Two Rows on Mobile, One Row on Desktop */}
+      {/* Secondary Controls - Two Rows on Mobile (3+3), One Row on Desktop */}
       <div className="flex flex-col md:flex-row items-center justify-center gap-3">
-        {/* First Row / Group */}
+        {/* First Row / Group - 3 buttons on mobile */}
         <div className="flex items-center justify-center gap-3">
           {/* FAQ Button - Mobile Only */}
           <button
             onClick={onOpenFaq}
-            className={`lg:hidden p-2.5 rounded-full glass-button text-gray-600 dark:text-gray-300 ${MODE_COLORS[mode].hover} transition-all duration-300 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${MODE_COLORS[mode].ring}`}
+            className={`md:hidden p-2.5 rounded-full glass-button text-gray-600 dark:text-gray-300 ${MODE_COLORS[mode].hover} transition-all duration-300 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${MODE_COLORS[mode].ring}`}
             aria-label="FAQ"
           >
             <HelpCircle size={16} />
@@ -116,23 +116,20 @@ export const Controls: React.FC<ControlsProps> = memo(({
             {isDarkMode ? <Sun size={16} /> : <Moon size={16} />}
           </button>
 
-          {/* About */}
+          {/* About - Desktop only in first row */}
           <button
             onClick={onOpenAbout}
-            className={`p-2.5 rounded-full glass-button text-gray-600 dark:text-gray-300 ${MODE_COLORS[mode].hover} transition-all duration-300 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${MODE_COLORS[mode].ring}`}
+            className={`hidden md:flex p-2.5 rounded-full glass-button text-gray-600 dark:text-gray-300 ${MODE_COLORS[mode].hover} transition-all duration-300 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${MODE_COLORS[mode].ring}`}
             aria-label="About Developer"
           >
             <Info size={16} />
           </button>
-        </div>
 
-        {/* Second Row / Group */}
-        <div className="flex items-center justify-center gap-3">
-          {/* Picture-in-Picture - Only show if supported */}
+          {/* Picture-in-Picture - Desktop only */}
           {isPipSupported && (
             <button
               onClick={onTogglePip}
-              className={`p-2.5 rounded-full glass-button transition-all duration-300 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
+              className={`hidden md:flex p-2.5 rounded-full glass-button transition-all duration-300 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
                 isPipEnabled 
                   ? MODE_COLORS[mode].text
                   : `text-gray-600 dark:text-gray-300 ${MODE_COLORS[mode].hover}`
@@ -144,6 +141,45 @@ export const Controls: React.FC<ControlsProps> = memo(({
             </button>
           )}
 
+          {/* Statistics - Desktop only in first row */}
+          <button
+            onClick={onOpenStats}
+            className={`hidden md:flex p-2.5 rounded-full glass-button text-gray-600 dark:text-gray-300 ${MODE_COLORS[mode].hover} transition-all duration-300 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${MODE_COLORS[mode].ring}`}
+            aria-label="View Statistics"
+          >
+            <TrendingUp size={16} />
+          </button>
+
+          {/* Keyboard Shortcuts - Desktop only */}
+          <button
+            onClick={onOpenKeyboardShortcuts}
+            className={`hidden md:flex p-2.5 rounded-full glass-button text-gray-600 dark:text-gray-300 ${MODE_COLORS[mode].hover} transition-all duration-300 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${MODE_COLORS[mode].ring}`}
+            aria-label="Keyboard Shortcuts"
+          >
+            <Keyboard size={16} />
+          </button>
+
+          {/* Settings - Desktop only in first row */}
+          <button
+            onClick={onOpenSettings}
+            className={`hidden md:flex p-2.5 rounded-full glass-button text-gray-600 dark:text-gray-300 ${MODE_COLORS[mode].hover} transition-all duration-300 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${MODE_COLORS[mode].ring}`}
+            aria-label="Settings"
+          >
+            <Settings size={16} />
+          </button>
+        </div>
+
+        {/* Second Row - Mobile only (3 buttons: About, Statistics, Settings) */}
+        <div className="flex md:hidden items-center justify-center gap-3">
+          {/* About */}
+          <button
+            onClick={onOpenAbout}
+            className={`p-2.5 rounded-full glass-button text-gray-600 dark:text-gray-300 ${MODE_COLORS[mode].hover} transition-all duration-300 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${MODE_COLORS[mode].ring}`}
+            aria-label="About Developer"
+          >
+            <Info size={16} />
+          </button>
+
           {/* Statistics */}
           <button
             onClick={onOpenStats}
@@ -151,15 +187,6 @@ export const Controls: React.FC<ControlsProps> = memo(({
             aria-label="View Statistics"
           >
             <TrendingUp size={16} />
-          </button>
-
-          {/* Keyboard Shortcuts */}
-          <button
-            onClick={onOpenKeyboardShortcuts}
-            className={`p-2.5 rounded-full glass-button text-gray-600 dark:text-gray-300 ${MODE_COLORS[mode].hover} transition-all duration-300 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${MODE_COLORS[mode].ring}`}
-            aria-label="Keyboard Shortcuts"
-          >
-            <Keyboard size={16} />
           </button>
 
           {/* Settings */}
