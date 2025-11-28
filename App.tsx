@@ -20,6 +20,13 @@ const AboutModal = lazy(() => import('./components/AboutModal').then(m => ({ def
 const Confetti = lazy(() => import('./components/Confetti').then(m => ({ default: m.Confetti })));
 const KeyboardShortcutsHelp = lazy(() => import('./components/KeyboardShortcutsHelp').then(m => ({ default: m.KeyboardShortcutsHelp })));
 const StatisticsModal = lazy(() => import('./components/StatisticsModal').then(m => ({ default: m.StatisticsModal })));
+const PictureInPicture = lazy(() => import('./components/PictureInPicture').then(m => ({ default: m.PictureInPicture })));
+
+// Check PiP support
+const checkPipSupported = () => 
+  typeof document !== 'undefined' && 
+  'pictureInPictureEnabled' in document && 
+  document.pictureInPictureEnabled;
 
 function App() {
   const [settings, setSettings] = useState<Settings>(() => {
@@ -66,6 +73,8 @@ function App() {
   const [showBackgroundCredit, setShowBackgroundCredit] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [isPipEnabled, setIsPipEnabled] = useState(false);
+  const [isPipSupported] = useState(() => checkPipSupported());
 
   const {
     mode,
@@ -239,6 +248,8 @@ function App() {
   const handleOpenKeyboardShortcuts = useCallback(() => setIsKeyboardShortcutsOpen(true), []);
   const handleCloseKeyboardShortcuts = useCallback(() => setIsKeyboardShortcutsOpen(false), []);
   const handleToggleCharacter = useCallback(() => setShowCharacter(prev => !prev), []);
+  const handleTogglePip = useCallback(() => setIsPipEnabled(prev => !prev), []);
+  const handleClosePip = useCallback(() => setIsPipEnabled(false), []);
   const handleModeSelect = useCallback((m: TimerMode) => {
     setMode(m);
     resetTimer();
@@ -348,6 +359,9 @@ function App() {
             onOpenKeyboardShortcuts={handleOpenKeyboardShortcuts}
             showCharacter={showCharacter}
             onToggleCharacter={handleToggleCharacter}
+            isPipEnabled={isPipEnabled}
+            onTogglePip={handleTogglePip}
+            isPipSupported={isPipSupported}
           />
 
           {/* Footer Info / Cycle Progress */}
@@ -459,6 +473,20 @@ function App() {
 
       <Suspense fallback={null}>
         {showCharacter && <MotivationalCharacter mode={mode} isTimerActive={isActive} messageInterval={settings.characterMessageInterval} />}
+      </Suspense>
+
+      {/* Picture-in-Picture Mini Player */}
+      <Suspense fallback={null}>
+        {isPipSupported && (
+          <PictureInPicture
+            timeLeft={timeLeft}
+            mode={mode}
+            isActive={isActive}
+            onToggle={toggleTimer}
+            isEnabled={isPipEnabled}
+            onClose={handleClosePip}
+          />
+        )}
       </Suspense>
     </div>
   );

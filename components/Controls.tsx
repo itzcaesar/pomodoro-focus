@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { Play, Pause, RotateCcw, Settings, Moon, Sun, HelpCircle, Smile, Info, TrendingUp, Keyboard } from 'lucide-react';
+import { Play, Pause, RotateCcw, Settings, Moon, Sun, HelpCircle, Smile, Info, TrendingUp, Keyboard, PictureInPicture2 } from 'lucide-react';
 import { TimerMode } from '../types';
 import { MODE_GRADIENTS, MODE_GLOW, MODE_COLORS } from '../constants';
 
@@ -17,6 +17,9 @@ interface ControlsProps {
   onOpenKeyboardShortcuts: () => void;
   showCharacter: boolean;
   onToggleCharacter: () => void;
+  isPipEnabled: boolean;
+  onTogglePip: () => void;
+  isPipSupported: boolean;
 }
 
 export const Controls: React.FC<ControlsProps> = memo(({ 
@@ -32,7 +35,10 @@ export const Controls: React.FC<ControlsProps> = memo(({
   onOpenStats,
   onOpenKeyboardShortcuts,
   showCharacter, 
-  onToggleCharacter 
+  onToggleCharacter,
+  isPipEnabled,
+  onTogglePip,
+  isPipSupported
 }) => {
   return (
     <div className="mt-12 sm:mt-16 w-full flex flex-col items-center gap-6">
@@ -122,6 +128,22 @@ export const Controls: React.FC<ControlsProps> = memo(({
 
         {/* Second Row / Group */}
         <div className="flex items-center justify-center gap-3">
+          {/* Picture-in-Picture - Only show if supported */}
+          {isPipSupported && (
+            <button
+              onClick={onTogglePip}
+              className={`p-2.5 rounded-full glass-button transition-all duration-300 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
+                isPipEnabled 
+                  ? MODE_COLORS[mode].text
+                  : `text-gray-600 dark:text-gray-300 ${MODE_COLORS[mode].hover}`
+              } ${MODE_COLORS[mode].ring}`}
+              aria-label="Picture-in-Picture"
+              title="Mini Player (PiP)"
+            >
+              <PictureInPicture2 size={16} />
+            </button>
+          )}
+
           {/* Statistics */}
           <button
             onClick={onOpenStats}
