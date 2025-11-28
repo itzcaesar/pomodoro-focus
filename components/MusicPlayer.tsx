@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, memo, useCallback, useMemo } from 'react';
 import { Music, ChevronDown, ChevronUp } from 'lucide-react';
 import { TimerMode, MusicPlatform } from '../types';
 import { 
@@ -19,7 +19,7 @@ interface MusicPlayerProps {
   onExpandChange?: (isExpanded: boolean) => void;
 }
 
-export const MusicPlayer: React.FC<MusicPlayerProps> = ({ mode, platform, spotifyUrl, youtubeUrl, onExpandChange }) => {
+export const MusicPlayer: React.FC<MusicPlayerProps> = memo(({ mode, platform, spotifyUrl, youtubeUrl, onExpandChange }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   
   // Extract Spotify playlist ID from URL
@@ -42,17 +42,23 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({ mode, platform, spotif
     return { type: 'video', id: 'jfKfPfyJRdk' };
   };
   
-  const spotifyId = extractSpotifyId(spotifyUrl);
-  const youtubeData = extractYoutubeId(youtubeUrl);
+  const spotifyId = useMemo(() => extractSpotifyId(spotifyUrl), [spotifyUrl]);
+  const youtubeData = useMemo(() => extractYoutubeId(youtubeUrl), [youtubeUrl]);
   
-  const getYoutubeEmbedUrl = () => {
+  const youtubeEmbedUrl = useMemo(() => {
     if (youtubeData.type === 'playlist') {
       return `https://www.youtube.com/embed/videoseries?list=${youtubeData.id}&autoplay=1&mute=0`;
     }
     return `https://www.youtube.com/embed/${youtubeData.id}?autoplay=1&mute=0`;
-  };
+  }, [youtubeData]);
 
   const platformName = platform === MusicPlatform.Spotify ? 'Spotify' : 'YouTube';
+  
+  const handleToggle = useCallback(() => {
+    const newState = !isExpanded;
+    setIsExpanded(newState);
+    onExpandChange?.(newState);
+  }, [isExpanded, onExpandChange]);
 
   return (
     <div className="w-full">
@@ -60,11 +66,7 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({ mode, platform, spotif
         
         {/* Header */}
         <button
-          onClick={() => {
-            const newState = !isExpanded;
-            setIsExpanded(newState);
-            onExpandChange?.(newState);
-          }}
+          onClick={handleToggle}
           className={`w-full p-3 sm:p-4 flex items-center justify-between ${PLAYER_HOVER_BG[mode]} transition-colors`}
         >
           <div className="flex items-center gap-2 sm:gap-3">
@@ -104,7 +106,7 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({ mode, platform, spotif
               <iframe
                 key={`youtube-expanded-${youtubeData.id}`}
                 style={{ borderRadius: '12px' }}
-                src={getYoutubeEmbedUrl()}
+                src={youtubeEmbedUrl}
                 width="100%"
                 height="352"
                 frameBorder="0"
@@ -136,7 +138,7 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({ mode, platform, spotif
               <iframe
                 key={`youtube-compact-${youtubeData.id}`}
                 style={{ borderRadius: '12px' }}
-                src={getYoutubeEmbedUrl()}
+                src={youtubeEmbedUrl}
                 width="100%"
                 height="80"
                 frameBorder="0"
@@ -151,4 +153,6 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({ mode, platform, spotif
       </div>
     </div>
   );
-};
+});
+
+MusicPlayer.displayName = 'MusicPlayer';

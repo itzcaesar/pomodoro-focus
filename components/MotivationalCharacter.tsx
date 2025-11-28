@@ -116,6 +116,8 @@ export const MotivationalCharacter: React.FC<MotivationalCharacterProps> = memo(
             alt="Motivational Character" 
             className="w-32 h-32 object-contain drop-shadow-2xl"
             loading="lazy"
+            decoding="async"
+            fetchPriority="low"
           />
         </div>
         

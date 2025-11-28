@@ -223,6 +223,49 @@
         -moz-osx-font-smoothing: grayscale;
         text-rendering: optimizeLegibility;
       }
+
+      /* Mobile Performance Optimizations */
+      @media (max-width: 768px) {
+        .glass-panel {
+          backdrop-filter: blur(12px) saturate(150%);
+          -webkit-backdrop-filter: blur(12px) saturate(150%);
+        }
+        
+        .glass-button {
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+        }
+        
+        /* Disable expensive animations on mobile */
+        .animate-blob {
+          animation: none !important;
+          opacity: 0.2;
+        }
+        
+        /* Reduce animation complexity */
+        .animate-breathe {
+          animation: none;
+        }
+        
+        /* Optimize transitions */
+        .transition-all {
+          transition-property: opacity, transform;
+        }
+      }
+
+      /* Reduce motion for users who prefer it */
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+
+      /* GPU acceleration for animated elements */
+      .will-change-transform {
+        will-change: transform;
+      }
     </style>
   <script type="importmap">
 {

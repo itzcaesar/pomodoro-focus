@@ -168,15 +168,24 @@ function App() {
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, [toggleTimer, resetTimer, setMode]);
 
-  // Detect mobile/desktop for background orientation
+  // Detect mobile/desktop for background orientation (throttled for performance)
   useEffect(() => {
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
+    
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
+      if (timeoutId) return;
+      timeoutId = setTimeout(() => {
+        setIsMobile(window.innerWidth < 768);
+        timeoutId = null;
+      }, 150);
     };
     
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', checkMobile, { passive: true });
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+      if (timeoutId) clearTimeout(timeoutId);
+    };
   }, []);
 
   // Fetch background image
