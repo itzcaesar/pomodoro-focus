@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, memo } from 'react';
 
 interface ConfettiProps {
   trigger: boolean;
@@ -12,7 +12,11 @@ interface Particle {
   animationDuration: string;
 }
 
-export const Confetti: React.FC<ConfettiProps> = ({ trigger }) => {
+// Detect mobile for reduced particle count
+const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+const PARTICLE_COUNT = isMobile ? 25 : 50; // Fewer particles on mobile
+
+export const Confetti: React.FC<ConfettiProps> = memo(({ trigger }) => {
   const [particles, setParticles] = useState<Particle[]>([]);
 
   useEffect(() => {
@@ -25,7 +29,7 @@ export const Confetti: React.FC<ConfettiProps> = ({ trigger }) => {
         '#a855f7', '#8b5cf6', // Purple/Violet
       ];
 
-      const newParticles: Particle[] = Array.from({ length: 50 }, (_, i) => ({
+      const newParticles: Particle[] = Array.from({ length: PARTICLE_COUNT }, (_, i) => ({
         id: i,
         left: Math.random() * 100,
         backgroundColor: colors[Math.floor(Math.random() * colors.length)],
@@ -48,7 +52,7 @@ export const Confetti: React.FC<ConfettiProps> = ({ trigger }) => {
       {particles.map((particle) => (
         <div
           key={particle.id}
-          className="absolute top-0 w-3 h-3 rounded-full animate-confetti-fall"
+          className="absolute top-0 w-3 h-3 rounded-full animate-confetti-fall will-change-transform"
           style={{
             left: `${particle.left}%`,
             backgroundColor: particle.backgroundColor,
@@ -59,4 +63,6 @@ export const Confetti: React.FC<ConfettiProps> = ({ trigger }) => {
       ))}
     </div>
   );
-};
+});
+
+Confetti.displayName = 'Confetti';

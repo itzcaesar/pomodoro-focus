@@ -1,4 +1,4 @@
-import React, { useState, useEffect, lazy, Suspense } from 'react';
+import React, { useState, useEffect, lazy, Suspense, useMemo, useCallback, useRef } from 'react';
 import { Settings as SettingsIcon, Moon, Sun } from 'lucide-react';
 import { useTimer } from './hooks/useTimer';
 import { Settings, TimerMode, PixabayImage } from './types';
@@ -78,6 +78,10 @@ function App() {
     resetTimer,
     totalTime
   } = useTimer(settings);
+
+  // Ref to track last favicon update to throttle updates
+  const lastFaviconUpdate = useRef(0);
+  const faviconThrottleMs = 1000; // Update favicon max once per second
 
   useEffect(() => {
     if (isDarkMode) {
@@ -196,31 +200,55 @@ function App() {
     }
   }, [settings.enableBackgrounds, isMobile]);
 
-  useEffect(() => {
-    const minutes = Math.floor(timeLeft / 60);
-    const seconds = timeLeft % 60;
-    const timeString = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-    const status = isCompleted ? 'Completed!' : (mode === TimerMode.Focus ? 'Focus' : 'Break');
-    document.title = `${timeString} - ${status}`;
-    
-    // Update favicon with progress
-    const progress = calculateProgress();
-    updateFavicon(progress, mode);
-  }, [timeLeft, mode, isCompleted]);
-
-  const formatTime = (seconds: number) => {
-    const m = Math.floor(seconds / 60);
-    const s = seconds % 60;
+  // Memoize time formatting to prevent recalculation on every render
+  const formattedTime = useMemo(() => {
+    const m = Math.floor(timeLeft / 60);
+    const s = timeLeft % 60;
     return `${m}:${s.toString().padStart(2, '0')}`;
-  };
+  }, [timeLeft]);
 
-  const calculateProgress = () => {
+  // Memoize progress calculation
+  const progress = useMemo(() => {
     if (isCompleted) return 100;
     return ((totalTime - timeLeft) / totalTime) * 100;
-  };
+  }, [isCompleted, totalTime, timeLeft]);
 
-  // Correct cycle calculation: 1-based index for display, modulo for progress bar
-  const cycleProgress = (cycleCount - 1) % settings.longBreakInterval + 1;
+  // Update document title and favicon (throttled)
+  useEffect(() => {
+    const status = isCompleted ? 'Completed!' : (mode === TimerMode.Focus ? 'Focus' : 'Break');
+    document.title = `${formattedTime} - ${status}`;
+    
+    // Throttle favicon updates for performance
+    const now = Date.now();
+    if (now - lastFaviconUpdate.current >= faviconThrottleMs) {
+      updateFavicon(progress, mode);
+      lastFaviconUpdate.current = now;
+    }
+  }, [formattedTime, mode, isCompleted, progress]);
+
+  // Memoized callbacks to prevent child re-renders
+  const handleToggleTheme = useCallback(() => setIsDarkMode(prev => !prev), []);
+  const handleOpenSettings = useCallback(() => setIsSettingsOpen(true), []);
+  const handleCloseSettings = useCallback(() => setIsSettingsOpen(false), []);
+  const handleOpenFaq = useCallback(() => setIsFaqOpen(true), []);
+  const handleCloseFaq = useCallback(() => setIsFaqOpen(false), []);
+  const handleOpenAbout = useCallback(() => setIsAboutOpen(true), []);
+  const handleCloseAbout = useCallback(() => setIsAboutOpen(false), []);
+  const handleOpenStats = useCallback(() => setIsStatsOpen(true), []);
+  const handleCloseStats = useCallback(() => setIsStatsOpen(false), []);
+  const handleOpenKeyboardShortcuts = useCallback(() => setIsKeyboardShortcutsOpen(true), []);
+  const handleCloseKeyboardShortcuts = useCallback(() => setIsKeyboardShortcutsOpen(false), []);
+  const handleToggleCharacter = useCallback(() => setShowCharacter(prev => !prev), []);
+  const handleModeSelect = useCallback((m: TimerMode) => {
+    setMode(m);
+    resetTimer();
+  }, [setMode, resetTimer]);
+
+  // Memoized calculations
+  const cycleProgress = useMemo(() => 
+    (cycleCount - 1) % settings.longBreakInterval + 1,
+    [cycleCount, settings.longBreakInterval]
+  );
 
   // Trigger confetti when completing a full cycle (before long break)
   useEffect(() => {
@@ -275,10 +303,7 @@ function App() {
 
           {/* Mode Selector */}
           <div className="mb-8 sm:mb-12 w-full">
-              <ModeSelector currentMode={mode} onSelectMode={(m) => {
-                  setMode(m);
-                  resetTimer();
-              }} />
+              <ModeSelector currentMode={mode} onSelectMode={handleModeSelect} />
           </div>
 
           {/* Timer Display */}
@@ -287,7 +312,7 @@ function App() {
                <ProgressRing 
                  radius={140} 
                  stroke={8} 
-                 progress={calculateProgress()} 
+                 progress={progress} 
                  mode={mode}
                />
                
@@ -297,7 +322,7 @@ function App() {
                     WebkitFontSmoothing: 'antialiased',
                     letterSpacing: '-0.02em'
                   }}>
-                    {formatTime(timeLeft)}
+                    {formattedTime}
                   </span>
                   <span className={`mt-3 text-sm font-bold uppercase tracking-[0.3em] transition-all duration-500 ${isCompleted ? 'text-emerald-500 scale-110 animate-pulse-glow' : 'text-gray-600 dark:text-gray-400'}`} style={{
                     textShadow: isCompleted ? '0 0 20px rgba(16, 185, 129, 0.4)' : 'none'
@@ -315,14 +340,14 @@ function App() {
             onReset={resetTimer} 
             mode={mode}
             isDarkMode={isDarkMode}
-            onToggleTheme={() => setIsDarkMode(!isDarkMode)}
-            onOpenSettings={() => setIsSettingsOpen(true)}
-            onOpenFaq={() => setIsFaqOpen(true)}
-            onOpenAbout={() => setIsAboutOpen(true)}
-            onOpenStats={() => setIsStatsOpen(true)}
-            onOpenKeyboardShortcuts={() => setIsKeyboardShortcutsOpen(true)}
+            onToggleTheme={handleToggleTheme}
+            onOpenSettings={handleOpenSettings}
+            onOpenFaq={handleOpenFaq}
+            onOpenAbout={handleOpenAbout}
+            onOpenStats={handleOpenStats}
+            onOpenKeyboardShortcuts={handleOpenKeyboardShortcuts}
             showCharacter={showCharacter}
-            onToggleCharacter={() => setShowCharacter(!showCharacter)}
+            onToggleCharacter={handleToggleCharacter}
           />
 
           {/* Footer Info / Cycle Progress */}
@@ -391,7 +416,7 @@ function App() {
       <Suspense fallback={null}>
         <SettingsModal 
           isOpen={isSettingsOpen}
-          onClose={() => setIsSettingsOpen(false)}
+          onClose={handleCloseSettings}
           settings={settings}
           onUpdateSettings={setSettings}
         />
@@ -400,14 +425,14 @@ function App() {
       <Suspense fallback={null}>
         <FaqModal 
           isOpen={isFaqOpen}
-          onClose={() => setIsFaqOpen(false)}
+          onClose={handleCloseFaq}
         />
       </Suspense>
 
       <Suspense fallback={null}>
         <AboutModal 
           isOpen={isAboutOpen}
-          onClose={() => setIsAboutOpen(false)}
+          onClose={handleCloseAbout}
           mode={mode}
         />
       </Suspense>
@@ -415,7 +440,7 @@ function App() {
       <Suspense fallback={null}>
         <StatisticsModal 
           isOpen={isStatsOpen}
-          onClose={() => setIsStatsOpen(false)}
+          onClose={handleCloseStats}
           mode={mode}
         />
       </Suspense>
@@ -427,7 +452,7 @@ function App() {
       <Suspense fallback={null}>
         <KeyboardShortcutsHelp 
           isOpen={isKeyboardShortcutsOpen}
-          onClose={() => setIsKeyboardShortcutsOpen(false)}
+          onClose={handleCloseKeyboardShortcuts}
           mode={mode}
         />
       </Suspense>

@@ -1,10 +1,43 @@
 // Dynamic favicon that shows timer progress
+// Optimized with canvas reuse and cached references
+
+// Cache canvas and link element for reuse
+let cachedCanvas: HTMLCanvasElement | null = null;
+let cachedLink: HTMLLinkElement | null = null;
+let lastProgress = -1;
+let lastMode = '';
+
+const getCanvas = () => {
+  if (!cachedCanvas) {
+    cachedCanvas = document.createElement('canvas');
+    cachedCanvas.width = 32;
+    cachedCanvas.height = 32;
+  }
+  return cachedCanvas;
+};
+
+const getLink = () => {
+  if (!cachedLink) {
+    cachedLink = document.querySelector("link[rel*='icon']") as HTMLLinkElement;
+    if (!cachedLink) {
+      cachedLink = document.createElement('link');
+      cachedLink.type = 'image/x-icon';
+      cachedLink.rel = 'shortcut icon';
+      document.head.appendChild(cachedLink);
+    }
+  }
+  return cachedLink;
+};
 
 export const updateFavicon = (progress: number, mode: string) => {
-  const canvas = document.createElement('canvas');
+  // Skip if no significant change (reduce redraws)
+  const roundedProgress = Math.round(progress);
+  if (roundedProgress === lastProgress && mode === lastMode) return;
+  lastProgress = roundedProgress;
+  lastMode = mode;
+
+  const canvas = getCanvas();
   const size = 32;
-  canvas.width = size;
-  canvas.height = size;
   const ctx = canvas.getContext('2d');
   
   if (!ctx) return;
@@ -13,13 +46,13 @@ export const updateFavicon = (progress: number, mode: string) => {
   ctx.clearRect(0, 0, size, size);
 
   // Define colors based on mode
-  const colors = {
+  const colors: Record<string, string> = {
     focus: '#fbbf24',      // Amber
     shortbreak: '#2dd4bf',  // Teal
     longbreak: '#38bdf8',   // Sky
   };
 
-  const modeKey = mode.toLowerCase().replace(' ', '') as keyof typeof colors;
+  const modeKey = mode.toLowerCase().replace(' ', '');
   const color = colors[modeKey] || colors.focus;
 
   // Draw background circle
@@ -45,16 +78,13 @@ export const updateFavicon = (progress: number, mode: string) => {
   ctx.fill();
 
   // Update favicon
-  const link = document.querySelector("link[rel*='icon']") as HTMLLinkElement || document.createElement('link');
-  link.type = 'image/x-icon';
-  link.rel = 'shortcut icon';
+  const link = getLink();
   link.href = canvas.toDataURL('image/png');
-  document.getElementsByTagName('head')[0].appendChild(link);
 };
 
 export const resetFavicon = () => {
-  const link = document.querySelector("link[rel*='icon']") as HTMLLinkElement;
-  if (link) {
-    link.href = '/favicon.ico';
-  }
+  lastProgress = -1;
+  lastMode = '';
+  const link = getLink();
+  link.href = '/favicon.ico';
 };

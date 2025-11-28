@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo, useCallback, useMemo } from 'react';
 import { X } from 'lucide-react';
 import { TimerMode } from '../types';
 
@@ -45,23 +45,23 @@ const BREAK_MESSAGES = [
   "You deserve this! 🎈"
 ];
 
-export const MotivationalCharacter: React.FC<MotivationalCharacterProps> = ({ mode, isTimerActive, messageInterval }) => {
+export const MotivationalCharacter: React.FC<MotivationalCharacterProps> = memo(({ mode, isTimerActive, messageInterval }) => {
   const [message, setMessage] = useState('');
   const [isVisible, setIsVisible] = useState(true);
   const [isMinimized, setIsMinimized] = useState(false);
 
-  useEffect(() => {
-    const getRandomMessage = () => {
-      if (mode === TimerMode.Focus) {
-        // Alternate between motivational quotes and fun facts
-        const useFunFact = Math.random() > 0.5;
-        const array = useFunFact ? FUN_FACTS : MOTIVATIONAL_QUOTES;
-        return array[Math.floor(Math.random() * array.length)];
-      } else {
-        return BREAK_MESSAGES[Math.floor(Math.random() * BREAK_MESSAGES.length)];
-      }
-    };
+  // Memoize the message getter
+  const getRandomMessage = useCallback(() => {
+    if (mode === TimerMode.Focus) {
+      const useFunFact = Math.random() > 0.5;
+      const array = useFunFact ? FUN_FACTS : MOTIVATIONAL_QUOTES;
+      return array[Math.floor(Math.random() * array.length)];
+    } else {
+      return BREAK_MESSAGES[Math.floor(Math.random() * BREAK_MESSAGES.length)];
+    }
+  }, [mode]);
 
+  useEffect(() => {
     // Set initial message
     setMessage(getRandomMessage());
 
@@ -73,7 +73,20 @@ export const MotivationalCharacter: React.FC<MotivationalCharacterProps> = ({ mo
 
       return () => clearInterval(interval);
     }
-  }, [mode, isTimerActive, messageInterval]);
+  }, [mode, isTimerActive, messageInterval, getRandomMessage]);
+
+  // Memoize border color class
+  const borderColorClass = useMemo(() => {
+    if (mode === TimerMode.Focus) return 'border-amber-200/30 dark:border-amber-700/30';
+    if (mode === TimerMode.ShortBreak) return 'border-teal-200/30 dark:border-teal-700/30';
+    return 'border-sky-200/30 dark:border-sky-700/30';
+  }, [mode]);
+
+  const handleToggleMinimize = useCallback(() => setIsMinimized(prev => !prev), []);
+  const handleClose = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsVisible(false);
+  }, []);
 
   if (!isVisible) return null;
 
@@ -82,20 +95,12 @@ export const MotivationalCharacter: React.FC<MotivationalCharacterProps> = ({ mo
       {/* Speech Bubble */}
       {!isMinimized && (
         <div className="relative animate-bounce-subtle">
-          <div className={`glass-panel rounded-2xl px-4 py-3 shadow-xl border ${
-            mode === TimerMode.Focus ? 'border-amber-200/30 dark:border-amber-700/30' :
-            mode === TimerMode.ShortBreak ? 'border-teal-200/30 dark:border-teal-700/30' :
-            'border-sky-200/30 dark:border-sky-700/30'
-          } max-w-[200px] relative backdrop-blur-xl`}>
+          <div className={`glass-panel rounded-2xl px-4 py-3 shadow-xl border ${borderColorClass} max-w-[200px] relative backdrop-blur-xl`}>
             <p className="text-sm text-gray-800 dark:text-gray-100 font-medium leading-relaxed">
               {message}
             </p>
             {/* Speech bubble tail pointing down */}
-            <div className={`glass-panel absolute -bottom-2 right-8 w-4 h-4 backdrop-blur-xl bg-white/40 dark:bg-black/40 border-r border-b ${
-              mode === TimerMode.Focus ? 'border-amber-200/30 dark:border-amber-700/30' :
-              mode === TimerMode.ShortBreak ? 'border-teal-200/30 dark:border-teal-700/30' :
-              'border-sky-200/30 dark:border-sky-700/30'
-            } rotate-45 transform origin-center overflow-hidden`}></div>
+            <div className={`glass-panel absolute -bottom-2 right-8 w-4 h-4 backdrop-blur-xl bg-white/40 dark:bg-black/40 border-r border-b ${borderColorClass} rotate-45 transform origin-center overflow-hidden`}></div>
           </div>
         </div>
       )}
@@ -103,23 +108,21 @@ export const MotivationalCharacter: React.FC<MotivationalCharacterProps> = ({ mo
       {/* Character */}
       <div className="relative group">
         <div 
-          className="cursor-pointer transition-transform hover:scale-110"
-          onClick={() => setIsMinimized(!isMinimized)}
+          className="cursor-pointer transition-transform hover:scale-110 will-change-transform"
+          onClick={handleToggleMinimize}
         >
           <img 
             src="https://iili.io/fB6nUbV.png" 
             alt="Motivational Character" 
             className="w-32 h-32 object-contain drop-shadow-2xl"
+            loading="lazy"
           />
         </div>
         
         {/* Control buttons on hover */}
         <div className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity">
           <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsVisible(false);
-            }}
+            onClick={handleClose}
             className="w-6 h-6 rounded-full bg-gray-800 dark:bg-gray-200 flex items-center justify-center shadow-lg hover:scale-110 transition-transform"
           >
             <X size={14} className="text-white dark:text-gray-800" />
@@ -128,4 +131,6 @@ export const MotivationalCharacter: React.FC<MotivationalCharacterProps> = ({ mo
       </div>
     </div>
   );
-};
+});
+
+MotivationalCharacter.displayName = 'MotivationalCharacter';

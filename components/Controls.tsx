@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Play, Pause, RotateCcw, Settings, Moon, Sun, HelpCircle, Smile, Info, TrendingUp, Keyboard } from 'lucide-react';
 import { TimerMode } from '../types';
 import { MODE_GRADIENTS, MODE_GLOW, MODE_COLORS } from '../constants';
@@ -19,7 +19,7 @@ interface ControlsProps {
   onToggleCharacter: () => void;
 }
 
-export const Controls: React.FC<ControlsProps> = ({ 
+export const Controls: React.FC<ControlsProps> = memo(({ 
   isActive, 
   onToggle, 
   onReset, 
@@ -152,4 +152,6 @@ export const Controls: React.FC<ControlsProps> = ({
       </div>
     </div>
   );
-};
+});
+
+Controls.displayName = 'Controls';
